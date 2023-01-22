@@ -83,7 +83,7 @@
 									<td>
 										<table class="table table-borderless">
 											<tr>
-												<td><a href="borrower-details-edit?applicant-id<?php echo base64_encode($borrower_id)?>" class="btn btn-info"><i class="bi bi-pencil"></i> Edit Details</a></td>
+												<td><a href="borrowers/borrower-details-edit?applicant-id=<?php echo base64_encode($borrower_id)?>" class="btn btn-info"><i class="bi bi-pencil"></i> Edit Details</a></td>
 											</tr>
 											<tr>
 												<td><a href="" class="btn btn-primary"><i class="bi bi-binoculars"></i> View Details</a></td>
