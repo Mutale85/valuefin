@@ -16,6 +16,7 @@
         $borrower_phone 			= preg_replace("#[^0-9]#", "", $_POST['phone']);
         $borrower_dateofbirth 		= filter_input(INPUT_POST,'borrower_dateofbirth', FILTER_SANITIZE_SPECIAL_CHARS);
         $borrower_age 	            = filter_var($_POST['borrower_age'], FILTER_SANITIZE_SPECIAL_CHARS);
+        $edit_id 		            = filter_input(INPUT_POST,'edit_id', FILTER_SANITIZE_SPECIAL_CHARS);
         
         // Business Details
         $borrower_address 			= filter_input(INPUT_POST, 'borrower_address', FILTER_SANITIZE_SPECIAL_CHARS);
@@ -33,9 +34,9 @@
         }
         $destination1 = '../uploads/'.basename($borrower_photo);
         $filename1    = $_FILES["borrower_photo"]["tmp_name"];
-        $destination2 = '../uploads/'.basename($borrower_photo);
+        $destination2 = '../uploads/'.basename($borrower_nrc_front);
         $filename2    = $_FILES["borrower_nrc_front"]["tmp_name"];
-        $destination3 = '../uploads/'.basename($borrower_photo);
+        $destination3 = '../uploads/'.basename($borrower_nrc_back);
         $filename3    = $_FILES["borrower_nrc_back"]["tmp_name"];
 
         $path_parts = pathinfo($_FILES["borrower_photo"]["name"]);
@@ -60,22 +61,20 @@
 			echo 'Client with NRC: '. $borrower_id. ' is already registered to this branch';
 			exit();
 		}
-
+        
+        
         $sql = $connect->prepare("INSERT INTO `borrowers_details`(`branch_id`, `parent_id`, `loan_officer_id`, `borrower_photo`, `borrower_title`, `borrower_firstname`, `borrower_lastname`, `borrower_gender`, `borrower_id`, `borrower_nrc_front`, `borrower_nrc_back`, `borrower_address`, `borrower_email`, `borrower_phone`, `borrower_dateofbirth`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-		$ex = $sql->execute([$branch_id, $parent_id, $loan_officers_id, $borrower_photo, $borrower_title, $borrower_firstname, $borrower_lastname, $borrower_gender, $borrower_id, $borrower_nrc_front, $borrower_nrc_back, $borrower_address, $borrower_email, $borrower_phone, $borrower_dateofbirth]);
+        $ex = $sql->execute([$branch_id, $parent_id, $loan_officers_id, $borrower_photo, $borrower_title, $borrower_firstname, $borrower_lastname, $borrower_gender, $borrower_id, $borrower_nrc_front, $borrower_nrc_back, $borrower_address, $borrower_email, $borrower_phone, $borrower_dateofbirth]);
+        
+        $sql_business = $connect->prepare("INSERT INTO `borrowers_business_details`(`branch_id`, `parent_id`, `loan_officers_id`, `borrower_id`, `borrower_business`, `borrower_shop_number`, `borrower_products`) VALUES (?, ?, ?, ?, ?, ?, ?)");
+        $ed = $sql_business->execute([$branch_id, $parent_id, $loan_officers_id, $borrower_id, $borrower_business, $borrower_shop_number, $borrower_products]);
+        
+        $sql_next_of_kin = $connect->prepare("INSERT INTO `borrower_next_of_kin_details`(`branch_id`, `parent_id`, `loan_officers_id`, `borrower_id`, `next_of_kin_fullnames`, `next_of_kin_nrc`, `next_of_kin_phone`, `next_of_kin_relationship`, `next_of_kin_address`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $q = $sql_next_of_kin->execute([$branch_id, $parent_id, $loan_officers_id, $borrower_id, $next_of_kin_fullnames, $next_of_kin_nrc, $next_of_kin_phone, $next_of_kin_relationship, $next_of_kin_address]);
+        
         if($ex){
             echo "Client submitted";
         }
-		$sql_business = $connect->prepare("INSERT INTO `borrowers_business_details`(`branch_id`, `parent_id`, `loan_officers_id`, `borrower_id`, `borrower_business`, `borrower_shop_number`, `borrower_products`) VALUES (?, ?, ?, ?, ?, ?, ?)");
-		$ed = $sql_business->execute([$branch_id, $parent_id, $loan_officers_id, $borrower_id, $borrower_business, $borrower_shop_number, $borrower_products]);
-        if($ed){
-            echo "Client's  business details submitted";
-        }
-		$sql_next_of_kin = $connect->prepare("INSERT INTO `borrower_next_of_kin_details`(`branch_id`, `parent_id`, `loan_officers_id`, `borrower_id`, `next_of_kin_fullnames`, `next_of_kin_nrc`, `next_of_kin_phone`, `next_of_kin_relationship`, `next_of_kin_address`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-		$q = $sql_next_of_kin->execute([$branch_id, $parent_id, $loan_officers_id, $borrower_id, $next_of_kin_fullnames, $next_of_kin_nrc, $next_of_kin_phone, $next_of_kin_relationship, $next_of_kin_address]);
-		
-		if($q){
-            echo "next of kin submitted";
-        }
+        
 	}
 ?>

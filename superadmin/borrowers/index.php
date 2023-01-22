@@ -113,6 +113,7 @@
 												<span class="input-group-text"><i class="bi bi-person"></i></span>
 												<input type="text" aria-label="First name" name="borrower_firstname" id="borrower_firstname" class="form-control">
 											</div>
+											<input type="hidden" name="edit_id" id="edit_id">
 											<input type="hidden" name="branch_id" id="branch_id" value="<?php echo $BRANCHID ?>">
 											<input type="hidden" name="parent_id" id="parent_id" value="<?php echo $_SESSION['parent_id']?>">
 											<input type="hidden" name="loan_officers_id" id="loan_officers_id" value="<?php echo $_SESSION['user_id']?>">

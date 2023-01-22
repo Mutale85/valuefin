@@ -2,7 +2,7 @@
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h1 class="m-0">Dashboard</h1>
+                <h4 class="m-0"><span id="time"></span></h4>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
@@ -13,3 +13,19 @@
         </div>
     </div>
 </div>
+
+<script>
+    var currentTime = new Date();
+    var currentHour = currentTime.getHours();
+    var username = "<?php echo $_SESSION['username']?>";
+    var time = document.getElementById('time');
+
+    if (currentHour < 12) {
+        time.innerText = "Good morning, " + username;
+    } else if (currentHour < 17) {
+        time.innerText = "Good afternoon, " + username;
+    } else {
+        time.innerText = "Good evening, " + username;
+    }
+
+</script>
