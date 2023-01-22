@@ -1,0 +1,13 @@
+Options +MultiViews
+
+RewriteEngine On
+RewriteBase / 
+RewriteRule ^id/([^/.]+)/?$ example.php?id=$1 [NC,L]
+RewriteRule ^(.+)\.php$/$1 [R,L]
+RewriteCond % {REQUEST_FILENAME}.php-f
+RewriteRule ^(.*?)/?$/$1.php [NC,END]
+RewriteRule ^index?$ index.php 
+RewriteRule ^home?$ index.php 
+RewriteRule ^desk?$ pastors.php?$ 
+RewriteRule ^apply?$ apply.php
+IndexIgnore *
