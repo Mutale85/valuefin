@@ -99,7 +99,7 @@
 												<td><a href="" class="btn btn-primary"><i class="bi bi-printer"></i> Print Info</a></td>
 											</tr> -->
 											<tr>
-												<td><a href="" class="btn btn-warning"><i class="bi bi-person-workspace"></i> Give Loan</a></td>
+												<td><a href="borrowers/loan-application?applicant-id=<?php echo base64_encode($borrower_id)?>&branch-id=<?php echo base64_encode($BRANCHID)?>&parent-id=<?php echo base64_encode($_SESSION['parent_id'])?>" class="btn btn-warning"><i class="bi bi-person-workspace"></i> Give Loan</a></td>
 											</tr>
 											<tr>
 												<td><a href="" class="btn btn-danger"><i class="bi bi-trash"></i> Trash Info</a></td>

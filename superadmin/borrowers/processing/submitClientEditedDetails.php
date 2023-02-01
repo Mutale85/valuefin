@@ -13,7 +13,7 @@
         $borrower_country 			= filter_input(INPUT_POST, 'borrower_country', FILTER_SANITIZE_SPECIAL_CHARS);
         $borrower_city 				= filter_input(INPUT_POST, 'borrower_city', FILTER_SANITIZE_SPECIAL_CHARS);
         $borrower_email 			= filter_var($_POST['borrower_email'], FILTER_SANITIZE_EMAIL);
-        $borrower_phone 			= preg_replace("#[^0-9]#", "", $_POST['phone']);
+        $borrower_phone 			= preg_replace("#[^0-9+]#", "", $_POST['borrower_phone']);
         $borrower_dateofbirth 		= filter_input(INPUT_POST,'borrower_dateofbirth', FILTER_SANITIZE_SPECIAL_CHARS);
         $borrower_age 	            = filter_var($_POST['borrower_age'], FILTER_SANITIZE_SPECIAL_CHARS);
         $edit_id 		            = filter_input(INPUT_POST,'edit_id', FILTER_SANITIZE_SPECIAL_CHARS);

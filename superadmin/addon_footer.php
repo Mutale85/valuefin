@@ -23,7 +23,7 @@
   $.widget.bridge('uibutton', $.ui.button)
 </script>
 <!-- Bootstrap 4 -->
-<script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<!-- <script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script> -->
 <!-- ChartJS -->
 <!-- <script src="plugins/chart.js/Chart.min.js"></script> -->
 <!-- Sparkline -->
@@ -32,13 +32,15 @@
 <!-- <script src="plugins/jqvmap/jquery.vmap.min.js"></script> -->
 <!-- <script src="plugins/jqvmap/maps/jquery.vmap.usa.js"></script> -->
 <!-- jQuery Knob Chart -->
-<script src="plugins/jquery-knob/jquery.knob.min.js"></script>
+<!-- <script src="plugins/jquery-knob/jquery.knob.min.js"></script> -->
+<!-- <script src="plugins/jquery/jquery.min.js"></script> -->
 <!-- daterangepicker -->
-<script src="plugins/moment/moment.min.js"></script>
+<!-- <script src="plugins/moment/moment.min.js"></script> -->
 <!-- <script src="plugins/daterangepicker/daterangepicker.js"></script> -->
 <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script> -->
 <!-- Tempusdominus Bootstrap 4 -->
-<script src="plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+<!-- <script src="plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script> -->
+
 <!-- Summernote -->
 <script src="plugins/summernote/summernote-bs4.min.js"></script>
 <!-- overlayScrollbars -->
@@ -54,6 +56,7 @@
 <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
 <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
+<script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
 
 <script>
   $(document).on("click", ".NavsetCookies", function(e){

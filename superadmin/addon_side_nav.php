@@ -194,7 +194,14 @@
               <p>Email Clients</p>
             </a>
           </li>
-          <li class="nav-header text-danger border-bottom"><b>LOANS</b></li>   
+          <li class="nav-header text-danger border-bottom"><b>LOANS</b></li>
+          
+          <li class="nav-item">
+            <a href="borrowers/loan-settings" class="nav-link">
+              <i class="bi bi-sliders nav-icon"></i>
+              <p> Loan Types</p>
+            </a>
+          </li>   
           <li class="nav-item">
             <a href="loans/view-loan-applications" class="nav-link">
               <i class="bi bi-arrow-right-square nav-icon"></i>
