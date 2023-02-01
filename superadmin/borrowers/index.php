@@ -782,7 +782,7 @@
 					processData: false,
 					cache:false,
 					beforeSend: function() {
-						successNow("Uploading files and submitting form...");
+						// successNow("Uploading files and submitting form...");
 						$('#submitBtn').html('Processing...');
 					},
 					success: function(response) {

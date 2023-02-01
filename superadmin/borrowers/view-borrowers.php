@@ -29,6 +29,7 @@
                                 <tr>
                                     <th>Photo</th>
                                     <th>Details</th>
+									<th>Kin Details</th>
                                     <th>Business</th>
                                     <th>Actions</th>
                                 </tr>
@@ -57,42 +58,51 @@
 												<td><?php echo $borrower_gender?> </td>
 											</tr>
 											<tr>
-												<th>Date of Birth</th>
+												<th>Birthday</th>
 												<td><?php echo $borrower_dateofbirth?> </td>
 											</tr>
 											<tr>
-												<th>Aged</th>
+												<th>Age</th>
 												<td><?php echo calculateUserAge($borrower_dateofbirth)?> Years</td>
 											</tr>
 											<tr>
-												<th>Phone number</th>
+												<th>Phone</th>
 												<td><?php echo $borrower_phone?></td>
 											</tr>
 											<tr>
 												<th>Email</th>
 												<td><?php echo $borrower_email?></td>
 											</tr>
+											<tr>
+												<th>Home Address</th>
+												<td><?php echo $borrower_address?></td>
+											</tr>
 										</table>
+									</td>
+									<td>
+									<?php
+											echo getNextofKinDetails($connect, $borrower_id) 
+										?>
 									</td>
 									<td>
 										<?php 
 											echo getBusinessDetails($connect, $borrower_id);
 										?>
-									
+										
 									</td>
 									<td>
 										<table class="table table-borderless">
 											<tr>
-												<td><a href="borrowers/borrower-details-edit?applicant-id=<?php echo base64_encode($borrower_id)?>" class="btn btn-info"><i class="bi bi-pencil"></i> Edit Details</a></td>
+												<td><a href="borrowers/borrower-details-edit?applicant-id=<?php echo base64_encode($borrower_id)?>" class="btn btn-info"><i class="bi bi-pencil"></i> Edit Info</a></td>
+											</tr>
+											<!-- <tr>
+												<td><a href="" class="btn btn-primary"><i class="bi bi-printer"></i> Print Info</a></td>
+											</tr> -->
+											<tr>
+												<td><a href="" class="btn btn-warning"><i class="bi bi-person-workspace"></i> Give Loan</a></td>
 											</tr>
 											<tr>
-												<td><a href="" class="btn btn-primary"><i class="bi bi-binoculars"></i> View Details</a></td>
-											</tr>
-											<tr>
-												<td><a href="" class="btn btn-warning"><i class="bi bi-person-workspace"></i> Issue Loan</a></td>
-											</tr>
-											<tr>
-												<td><a href="" class="btn btn-danger"><i class="bi bi-trash"></i> Delete Info</a></td>
+												<td><a href="" class="btn btn-danger"><i class="bi bi-trash"></i> Trash Info</a></td>
 											</tr>	
 										</table>
 										

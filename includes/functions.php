@@ -952,5 +952,40 @@ function getBusinessDetails($connect, $borrower_id){
 	return $output;
 }
 
+function getNextofKinDetails($connect, $borrower_id){
+	$output = "";
+	$query = $connect->prepare("SELECT * FROM borrower_next_of_kin_details WHERE borrower_id = ?");
+	$query->execute([$borrower_id]);
+	$row = $query->fetch();
+	if($row){
+		extract($row);
+		$output = '
+		<table class="table table-bordered">
+			<tr>
+				<th>Fullname</th>
+				<td>'.$next_of_kin_fullnames.'</td>
+			</tr>
+			<tr>
+				<th>Relationship</th>
+				<td>'.$next_of_kin_relationship.'</td>
+			</tr>
+			<tr>
+				<th>NRC Number</th>
+				<td>'.$next_of_kin_nrc.'</td>
+			</tr>
+			<tr>
+				<th>Phone</th>
+				<td>'.$next_of_kin_phone.'</td>
+			</tr>
+			<tr>
+				<th>Home Address</th>
+				<td>'.$next_of_kin_address.'</td>
+			</tr>
+		</table>
+		';
+	}
+	return $output;
+}
+
 ?>
 

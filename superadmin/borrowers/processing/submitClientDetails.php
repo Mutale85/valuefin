@@ -17,7 +17,7 @@
         $borrower_dateofbirth 		= filter_input(INPUT_POST,'borrower_dateofbirth', FILTER_SANITIZE_SPECIAL_CHARS);
         $borrower_age 	            = filter_var($_POST['borrower_age'], FILTER_SANITIZE_SPECIAL_CHARS);
         $edit_id 		            = filter_input(INPUT_POST,'edit_id', FILTER_SANITIZE_SPECIAL_CHARS);
-        
+        $borrower_dateofbirth       = date("Y-m-d", strtotime($borrower_dateofbirth));
         // Business Details
         $borrower_address 			= filter_input(INPUT_POST, 'borrower_address', FILTER_SANITIZE_SPECIAL_CHARS);
         $borrower_shop_number 		= filter_input(INPUT_POST, 'borrower_shop_number', FILTER_SANITIZE_SPECIAL_CHARS);
