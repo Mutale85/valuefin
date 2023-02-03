@@ -1,5 +1,5 @@
 <?php 
-  require ("addons/db.php");
+  require ("../includes/db.php");
   require ("addons/tip.php"); 
 ?>
 <!DOCTYPE html>

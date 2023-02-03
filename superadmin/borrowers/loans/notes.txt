@@ -1,0 +1,4 @@
+before loan is submitted, we will check if there is no other loans which have not been repaid fully by the borrower, if there is, we wil reject the loan submission.
+We will also check that the borrower has 
+
+Create customer profile, and loan application Details

@@ -3,7 +3,7 @@
 </div>
 
   <!-- Navbar -->
-<nav class="main-header navbar navbar-expand navbar-white navbar-light fixed-top">
+<!-- <nav class="main-header navbar navbar-expand navbar-white navbar-light fixed-top">
     <ul class="navbar-nav">
       	<li class="nav-item">
         	<a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
@@ -15,7 +15,6 @@
     </ul>
 
     <ul class="navbar-nav ml-auto">
-        <!-- Navbar Search -->
       	<li class="nav-item">
         	<a class="nav-link" data-widget="navbar-search" href="#" role="button">
               <span id="timeRemaining"></span>
@@ -31,7 +30,6 @@
             </a>
             
         </li>
-        <!-- Notifications Dropdown Menu -->
         <li class="nav-item dropdown">
             <a class="nav-link" data-toggle="dropdown" href="#">
             <i class="fa fa-plus"></i>
@@ -49,7 +47,7 @@
             </a>
         </li>
     </ul>
-</nav>
+</nav> -->
   <!-- /.navbar -->
 
   <!-- Main Sidebar Container -->

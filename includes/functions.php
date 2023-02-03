@@ -76,40 +76,19 @@
 	}
 
 
+	function getBorrowerFullNamesByCardId($connect, $borrower_id) {
+		$query = $connect->prepare("SELECT * FROM borrowers_details WHERE borrower_id = ? AND parent_id = ? ");
+		$query->execute(array($borrower_id, $_SESSION['parent_id']));
+		$output = "";
+		$row = $query->fetch();
+		if($row){
+			$output = $row['borrower_firstname'] . ' ' .$row['borrower_lastname'];
+			
+		}
+		return $output;
+	}
+
 	
-	function getBorrowerFullNamesByPhone($connect, $phone) {
-		$query = $connect->prepare("SELECT * FROM borrowers_details WHERE borrower_phone = ? AND parent_id = ? ");
-		$query->execute(array($phone, $_SESSION['parent_id']));
-		$output = "";
-		$row = $query->fetch();
-		if($row){
-			$output = $row['borrower_firstname'] . ' ' .$row['borrower_lastname'];
-			return $output;
-		}
-	}
-
-	function getBorrowerFullNamesByEmail($connect, $email) {
-		$query = $connect->prepare("SELECT * FROM borrowers_details WHERE borrower_email = ? AND parent_id = ? ");
-		$query->execute(array($email, $_SESSION['parent_id']));
-		$output = "";
-		$row = $query->fetch();
-		if($row){
-			$output = $row['borrower_firstname'] . ' ' .$row['borrower_lastname'];
-			return $output;
-		}
-	}
-
-	function InvestorFullNamesByEmail($connect, $email) {
-		$query = $connect->prepare("SELECT * FROM investors WHERE email = ? AND parent_id = ? ");
-		$query->execute(array($email, $_SESSION['parent_id']));
-		$output = "";
-		$row = $query->fetch();
-		if($row){
-			$output = $row['firstname'] . ' ' .$row['lastname'];
-			return $output;
-		}
-	}
-
 
 	function getStaffMemberNames($connect, $user_id, $parent_id) {
 		$query = $connect->prepare("SELECT * FROM admins WHERE id = ? AND parent_id = ? ");
@@ -592,20 +571,7 @@
 		return $output;
 	}
 // =============== end of recept function =========================
-	function getIDNumberForGroupLeader($connect, $group_leader_id, $parent_id){
-		$output = '';
-		$query = $connect->prepare("SELECT * FROM borrowers WHERE id = ? AND parent_id = ? ");
-		$query->execute(array($group_leader_id, $parent_id));
-		$row = $query->fetch();
-		if ($query->rowCount() > 0) {
-			if ($row) {
-				$output = $row['borrower_ID'];
-			}
-		}else{
-			$output = "";
-		}
-		return $output;
-	}
+	
 
 	function countLoans($connect, $borrower_id, $parent_id) {
 		$output = '';
@@ -923,7 +889,45 @@ function calculateUserAge($dob) {
 	$age = floor($difference / 31556926);
 	return $age;
 }
-  
+
+function getClientsDetails($connect, $borrower_id){
+	$query = $connect->prepare("SELECT * FROM borrowers_details WHERE borrower_id = ?");
+	$query->execute([$borrower_id]);
+	$row = $query->fetch();
+	extract($row);
+?>
+	<div class="text-center">
+		<img src="<?php echo getClientsImage($connect, $borrower_id)?>" id="output_image2" class="profile-user-img img-fluid img-circle" alt="pic" style="width: 120px; height: 120px;">
+	</div>
+	<h3 class="profile-username text-center"><span id="title"></span> <?php echo getBorrowerFullNamesByCardId($connect, $borrower_id) ?> </h3>
+	<p class="text-muted text-center"><span id="city"></span></p>
+	<ul class="list-group list-group-unbordered mb-3">
+		<li class="list-group-item">
+			<b>Gender</b> <a class="float-right" id="gender"><?php echo $borrower_gender?></a>
+		</li>
+		<li class="list-group-item">
+			<b>Date of Birth</b> <a class="float-right" id="dateofbirth"><?php echo date("j F Y", strtotime($borrower_dateofbirth))?></a>
+		</li>
+		<li class="list-group-item">
+			<b>Age</b> <a class="float-right"><?php echo calculateUserAge($borrower_dateofbirth)?> Years</a>
+		</li>
+		<li class="list-group-item">
+			<b>NRC</b> <a class="float-right" id="ID"><?php echo $borrower_id?></a>
+		</li>
+		
+		<li class="list-group-item">
+			<b>Home Address</b> <a class="float-right" id="address"><?php echo $borrower_address?></a>
+		</li>
+		<li class="list-group-item">
+			<b>Phone No.</b> <a class="float-right" id="phone"><?php echo $borrower_phone?></a>
+		</li>
+		<li class="list-group-item">
+			<b>Email</b> <a class="float-right" id="email"><?php echo $borrower_email?></a>
+		</li>
+		
+	</ul>
+<?php
+}
 
 function getBusinessDetails($connect, $borrower_id){
 	$output = "";
@@ -935,16 +939,16 @@ function getBusinessDetails($connect, $borrower_id){
 		$output = '
 		<table class="table table-bordered">
 			<tr>
-				<th>Business name</th>
-				<td>'.$borrower_business.'</td>
+				<th style="width:25%">Business name</th>
+				<td style="width:20%"; align="right">'.$borrower_business.'</td>
 			</tr>
 			<tr>
-				<th>Shop Number</th>
-				<td>'.$borrower_shop_number.'</td>
+				<th style="width:25%">Shop Number</th>
+				<td style="width:20%"; align="right">'.$borrower_shop_number.'</td>
 			</tr>
 			<tr>
-				<th>Products</th>
-				<td>'.$borrower_products.'</td>
+				<th style="width:25%">Products</th>
+				<td style="width:20%"; align="right">'.$borrower_products.'</td>
 			</tr>
 		</table>
 		';
@@ -962,24 +966,24 @@ function getNextofKinDetails($connect, $borrower_id){
 		$output = '
 		<table class="table table-bordered">
 			<tr>
-				<th>Fullname</th>
-				<td>'.$next_of_kin_fullnames.'</td>
+				<th style="width:25%">Fullname</th>
+				<td style="width:20%"; align="right">'.$next_of_kin_fullnames.'</td>
 			</tr>
 			<tr>
-				<th>Relationship</th>
-				<td>'.$next_of_kin_relationship.'</td>
+				<th style="width:25%">Relationship</th>
+				<td style="width:20%"; align="right">'.$next_of_kin_relationship.'</td>
 			</tr>
 			<tr>
-				<th>NRC Number</th>
-				<td>'.$next_of_kin_nrc.'</td>
+				<th style="width:25%">NRC Number</th>
+				<td style="width:20%"; align="right">'.$next_of_kin_nrc.'</td>
 			</tr>
 			<tr>
-				<th>Phone</th>
-				<td>'.$next_of_kin_phone.'</td>
+				<th style="width:25%">Phone</th>
+				<td style="width:20%"; align="right">'.$next_of_kin_phone.'</td>
 			</tr>
 			<tr>
-				<th>Home Address</th>
-				<td>'.$next_of_kin_address.'</td>
+				<th style="width:25%">Home Address</th>
+				<td style="width:20%"; align="right">'.$next_of_kin_address.'</td>
 			</tr>
 		</table>
 		';
@@ -987,5 +991,16 @@ function getNextofKinDetails($connect, $borrower_id){
 	return $output;
 }
 
+function getClientsImage($connect, $borrower_id){
+	$output = '';
+	$query = $connect->prepare("SELECT * FROM borrowers_details WHERE borrower_id = ? ");
+	$query->execute([$borrower_id]);
+	$row = $query->fetch();
+	if($row){
+		extract($row);
+		$output = 'borrowers/uploads/'.$borrower_photo;
+	}
+	return $output;
+} 
 ?>
 

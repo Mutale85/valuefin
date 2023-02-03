@@ -90,9 +90,9 @@
 												<label>Loan No:</label>
 												<div class="input-group mb-3">
 													<span class="input-group-text"><i class="bi bi-plus"></i></span>
-													<input type="text" name="loan_number" id="loan_number" class="form-control" placeholder="Create Loan ID">
+													<input type="text" name="loan_number" id="loan_number" class="form-control" placeholder="Create Loan ID" required>
 												</div>
-												<em>Please Add Loan ID, else you wont proceed.</em>
+												
 											</div>
 
 											<div class="col-md-12">
@@ -101,15 +101,30 @@
 											</div>
 											<div class="col-md-4">
 												<label>Fullnames</label>
-												<input type="text" name="alt_contact_names" id="alt_contact_names" class="form-control">
+												<input type="text" name="alt_contact_names" id="alt_contact_names" class="form-control" required>
 											</div>
 											<div class="col-md-4">
 												<label>Relationship</label>
-												<input type="text" name="alt_contact_relationship" id="alt_contact_relationship" class="form-control">
+												<select name="alt_contact_relationship" id="alt_contact_relationship" class="form-control" required>
+													<option value="">Select</option>
+													<option value="Father">Father</option>
+													<option value="Mother">Mother</option>
+													<option value="Son">Son</option>
+													<option value="Daughter">Daughter</option>
+													<option value="Uncle">Uncle</option>
+													<option value="Aunt">Aunt</option>
+													<option value="Brother">Brother</option>
+													<option value="Sister">Sister</option>
+													<option value="Cousin">Cousin</option>
+													<option value="Friend">Friend</option>
+												</select>
+												
 											</div>
 											<div class="col-md-4">
 												<label>Phone</label>
-												<input type="text" name="alt_contact_phone" id="alt_contact_phone" class="form-control">
+												<input type="phone" id="phone" name="phone" class="form-control" onkeyup="getPhone(this.value)">
+												<input type="hidden" name="alt_contact_phone" id="alt_contact_phone" class="form-control" required>
+												<span id="result"></span>
 											</div>
 
 											<div class="col-md-12">
@@ -176,7 +191,7 @@
 											<div class="col-md-4 mb-3" id="formEnter">
 												<label>Tenor - Working Days(No Weekends)</label>
 												<div class="input-group">
-													<input type="text" step="any" class="form-control" name="days" id="days" placeholder="Days" onkeyup="getDays(this.value)">
+													<input type="text" step="any" class="form-control" name="days" id="days" placeholder="Days" onkeyup="getDays(this.value)" required>
 													<div class="input-group-append">
 														<span class="input-group-text">Day(s)</span>
 													</div>
@@ -200,7 +215,7 @@
 													<div class="input-group-append">
 														<span class="input-group-text" id="feeSymbol">ZMW</span>
 													</div>
-													<input type="number" step="any" class="form-control" name="loan_processing_fee" id="loan_processing_fee" min="20">
+													<input type="number" step="any" class="form-control" name="loan_processing_fee" id="loan_processing_fee" min="20" required>
 												</div>
 												<em>This is the <span id="resultspanP"></span> which will be deducted from the total borrowed amount.</em>
 											</div>
@@ -227,14 +242,14 @@
 												</select>
 											</div>
 											
-											<div class="col-md-12">
+											<!-- <div class="col-md-12">
 												<div id="calculation_result"></div>
-											</div>
+											</div> -->
 										</div>
 									</div>
 									<div class="card-footer justify-content-between">
 										<!-- <button class="btn btn-secondary" type="button" id="calculate">Calculate Loan</button> -->
-										<button type="submit" class="btn btn-primary" id="saveLoan" disabled>Save changes</button>
+										<button type="submit" class="btn btn-primary" id="saveLoan">Submit Loan</button>
 									</div>
 									<?php
 										}
@@ -275,6 +290,49 @@
 
 	<?php include("../addon_footer.php")?>
 	<script>
+		// phone number
+		var input = document.querySelector("#phone");
+	    var iti = intlTelInput(input, {
+			autoHideDialCode: true,
+			autoPlaceholder: true,
+			separateDialCode: true,
+			nationalMode: true,
+			allowDropdown: true,
+			autoPlaceholder: "polite",
+	        dropdownContainer: document.body,
+	          	geoIpLookup: function(callback) {
+	            	$.get("http://ipinfo.io", function() {}, "jsonp").always(function(resp) {
+	              	var countryCode = (resp && resp.country) ? resp.country : "";
+	              	callback(countryCode);
+	            });
+	          },
+			nationalMode: false,
+			placeholderNumberType: "MOBILE",
+			preferredCountries: ['zm'],
+			separateDialCode: true,
+			utilsScript: "../intl.17/build/js/utils.js",
+	    });
+
+	    function getPhone(phone){
+			var number = iti.getNumber(intlTelInputUtils.numberFormat.E164);
+			var isValid = iti.isValidNumber();
+			result = document.querySelector("#result");
+			alt_contact_phone = document.getElementById("alt_contact_phone");
+			if (phone === "") {
+				result.textContent = "Add Your Number";
+				return false;
+			}
+			
+			if (isValid === true) {
+				result.textContent =  number + ", is valid";
+				alt_contact_phone.value = number;
+				
+			}else if(isValid === false){
+				result.textContent =  number + ", is invalid";
+				alt_contact_phone.value = number;
+			}
+		}
+
 		function getDays(day){
 			if(day !== ""){
 				let days = day;
@@ -324,8 +382,7 @@
 					return false;
 				}
 				var interest =  $(this).find(':selected').data('rate');
-				var period   =  $(this).find(':selected').data('period');
-				
+	
 				var interestRatePerMonth = interest;
 				var tenorInDays = 20;
 				var tenorInWeeks = 4;
@@ -345,10 +402,29 @@
 				}
 			})
 
+			$(document).on("keyup", "#principle_amount", function(){
+				var principleAmount = $(this).val();
+				var loan_id = document.getElementById('loan_id');
+				if(loan_id.value !== ""){
+					var interest =  $('#loan_id').find(':selected').data('rate');
+					var interestRatePerMonth = interest;
+					var tenorInDays = 20;
+					var tenorInWeeks = 4;
+					var tenorInMonths = 1;
+					var total_loan_amount = (principleAmount * interestRatePerMonth /100);
+					var grossLoan = parseFloat(principleAmount)+ parseFloat(total_loan_amount);
+					document.getElementById('repayment_amount_daily').value = parseFloat(grossLoan)/tenorInDays;
+					document.getElementById('repayment_amount_weekly').value = parseFloat(grossLoan)/tenorInWeeks;
+					document.getElementById('repayment_amount_month').value = parseFloat(grossLoan)/tenorInMonths;
+					document.getElementById('interest').value = interest;
+					document.getElementById('total_loan_amount').value = grossLoan;
+				}
+			})
+
 			$(document).on("keyup", "#loan_processing_fee", function(){
 				var loan_processing_fee = $(this).val();
-				var total_loan_amount = document.getElementById('total_loan_amount').value;
-				var net_loan =  document.getElementById('net_loan').value = parseFloat(repayment_amount) - parseFloat(loan_processing_fee);
+				var principleAmount = document.getElementById('principle_amount').value;
+				var net_loan =  document.getElementById('net_loan').value = parseFloat(principleAmount) - parseFloat(loan_processing_fee);
 			})
 		})
 		
@@ -358,7 +434,6 @@
 		$(function(){
 			$("#loanForm").submit(function(e){
 				e.preventDefault();
-				var saveLoan = document.getElementById('saveLoan');
 				var loanForm = document.getElementById('loanForm');
 				var data = new FormData(loanForm);
 				var url = 'borrowers/loans/submitLoan';
@@ -369,8 +444,12 @@
 					cache : false,
     				processData: false,
     				contentType: false,
+					beforeSend:function(){
+						$("#saveLoan").html('Processing...');
+					},
 					success:function(data){
-						successNow(data);
+						successToast(data);
+						$("#saveLoan").html('Submit Loan');
 					}
 				})
 			})

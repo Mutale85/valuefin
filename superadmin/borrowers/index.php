@@ -1,54 +1,11 @@
 <?php 
-	require ("../addons/db.php");
+	require ("../../includes/db.php");
 	require ("../addons/tip.php"); 
 ?>
 <!DOCTYPE html>
 <html>
 <head>
 	<?php include("../addon_header.php");?>
-	<style>
-		.select-style {
-		    width: 70px;
-		    padding: 0;
-		    margin: 0;
-		    display: inline-block;
-		    vertical-align: middle;
-		    background: url("http://grumbletum.com/places/arrowdown.gif") no-repeat 100% 30%;
-		}
-		.select-style select {
-		    width: 100%;
-		    padding: 0;
-		    margin: 0;
-		    background-color: transparent;
-		    background-image: none;
-		    border: none;
-		    box-shadow: none;
-		    -webkit-appearance: none;
-		       -moz-appearance: none;
-		            appearance: none;
-		}
-		.iti { width: 100%; }
-		.intl-tel-input {
-		  background-color: black;
-		}
-		.intl-tel-input .selected-flag {
-		  	z-index: 4;
-		  	background-color: black;
-		}
-		.iti__selected-dial-code {
-			color: red;
-		}
-		.intl-tel-input .country-list {
-		  	z-index: 5;
-		  	background-color: black;
-		}
-		.input-group .intl-tel-input .form-control {
-			border-top-left-radius: 4px;
-			border-top-right-radius: 0;
-			border-bottom-left-radius: 4px;
-			border-bottom-right-radius: 0;
-		}
-	</style>
 </head>
 <body class="layout-fixed">
 	<?php include("../addon_top_min_nav.php")?>
@@ -674,14 +631,7 @@
 			autoclose:true,
 			changeMonth: true,
       		changeYear: true,
-			
-			// startDate: '+3d',
 		});
-
-	// 	$( "#datepicker" ).datepicker({
-    //   changeMonth: true,
-    //   changeYear: true
-    // });
 
 
 		function calculateAge(dob) {
