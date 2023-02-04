@@ -91,7 +91,23 @@
 										
 									</td>
 									<td>
+										
 										<table class="table table-borderless">
+										<?php 
+											$query = $connect->prepare("SELECT * FROM loan_applications WHERE branch_id = ? AND parent_id = ? AND applicant_id = ? AND status = 'approved' and repayment_status = '0' ");
+											$query->execute([$BRANCHID, $_SESSION['parent_id'], $borrower_id]);
+											if($query->rowCount()){
+												$rows = $query->fetch(); 
+										?>
+											<tr>
+												<td><a href="borrowers/loan-request?client-id=<?php echo base64_encode($borrower_id)?>&application_id=<?php echo base64_encode($rows['id'])?>&status=<?php echo $rows['status']?>" class="btn btn-success">APPROVED</a></td>
+											</tr>
+											<tr>
+												<td>Client has a been issued a loan.</td>
+											</tr>
+										<?php
+											}else{
+										?>
 											<tr>
 												<td><a href="borrowers/borrower-details-edit?applicant-id=<?php echo base64_encode($borrower_id)?>" class="btn btn-info"><i class="bi bi-pencil"></i> Edit Info</a></td>
 											</tr>
@@ -103,7 +119,10 @@
 											</tr>
 											<tr>
 												<td><a href="" class="btn btn-danger"><i class="bi bi-trash"></i> Trash Info</a></td>
-											</tr>	
+											</tr>
+											<?php 
+												}
+											?>	
 										</table>
 										
 									</td>

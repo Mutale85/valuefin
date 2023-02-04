@@ -260,9 +260,9 @@
 					</div>
 					<div class="col-md-1"></div>
 				</div>
-				<button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-default">
+				<!-- <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-default">
                   Launch Default Modal
-                </button>
+                </button> -->
 				<!-- /.modal-content -->
 				<div class="modal fade" id="modal-default">
 					<div class="modal-dialog">
@@ -450,6 +450,10 @@
 					success:function(data){
 						successToast(data);
 						$("#saveLoan").html('Submit Loan');
+						setTimeout(function(){
+							location.reload();
+						}, 3000);
+						
 					}
 				})
 			})

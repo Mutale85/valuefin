@@ -83,13 +83,13 @@
       toastr.success(msg);
           toastr.options.progressBar = true;
           toastr.options.positionClass = "toast-top-center";
-          toastr.options.showDuration = 1000;
+          toastr.options.showDuration = 3000;
     }
 
     function errorToast(msg){
     toastr.error(msg);
         toastr.options.progressBar = true;
         toastr.options.positionClass = "toast-top-center";
-        toastr.options.showDuration = 1000;
+        toastr.options.showDuration = 3000;
     }
 </script>

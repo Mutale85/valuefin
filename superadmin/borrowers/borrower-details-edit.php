@@ -1,5 +1,5 @@
 <?php 
-	require ("../addons/db.php");
+	require ("../../includes/db.php");
 	require ("../addons/tip.php"); 
 
 	if(isset($_GET['applicant-id'])){
@@ -10,7 +10,7 @@
 <html>
 <head>
 	<?php include("../addon_header.php");?>
-	<style>
+	<!-- <style>
 		.select-style {
 		    width: 70px;
 		    padding: 0;
@@ -52,7 +52,7 @@
 			border-bottom-left-radius: 4px;
 			border-bottom-right-radius: 0;
 		}
-	</style>
+	</style> -->
 </head>
 <body class="layout-fixed">
 	<?php include("../addon_top_min_nav.php")?>

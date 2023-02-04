@@ -181,7 +181,7 @@
           </li> -->
          
           <li class="nav-item">
-            <a href="borrowers/sms_borrower" class="nav-link">
+            <a href="borrowers/borrowers-sms" class="nav-link">
               <i class="bi bi-reply-all nav-icon"></i>
               <p>SMS Clients</p>
             </a>
@@ -194,16 +194,17 @@
           </li>
           <li class="nav-header text-danger border-bottom"><b>LOANS</b></li>
           
+             
+          <li class="nav-item">
+            <a href="borrowers/all-loan-applications" class="nav-link">
+              <i class="bi bi-wallet nav-icon"></i>
+              <p> Loan Applications </p>
+            </a>
+          </li>
           <li class="nav-item">
             <a href="borrowers/loan-settings" class="nav-link">
               <i class="bi bi-sliders nav-icon"></i>
-              <p> Loan Types</p>
-            </a>
-          </li>   
-          <li class="nav-item">
-            <a href="loans/view-loan-applications" class="nav-link">
-              <i class="bi bi-arrow-right-square nav-icon"></i>
-              <p> View Loans </p>
+              <p> Loan Settings</p>
             </a>
           </li>
           <li class="nav-item">
