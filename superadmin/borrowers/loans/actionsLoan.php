@@ -140,7 +140,7 @@
 						<?php
 							}
 		}else{
-			echo "Yuo have not added your loan type";
+			echo "You have not added your loan type";
 		}
 		?>
 		        

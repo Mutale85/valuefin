@@ -59,7 +59,7 @@
                     foreach($result as $row){
                         extract($row);
                 ?>
-                    <a href="borrowers/loan-request?client-id=<?php echo base64_encode($applicant_id)?>&status=<?php echo $status?>" class="dropdown-item">
+                    <a href="borrowers/loan-request?client-id=<?php echo base64_encode($applicant_id)?>&application_id=<?php echo base64_encode($id)?>&status=<?php echo $status?>" class="dropdown-item">
                     
                         <div class="media">
                             <img src="<?php echo getClientsImage($connect, $applicant_id)?>" alt="User Avatar" style="width:60px;height:60px" class="img-size-50 mr-3 img-circle">

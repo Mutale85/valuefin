@@ -940,15 +940,15 @@ function getBusinessDetails($connect, $borrower_id){
 		<table class="table table-bordered">
 			<tr>
 				<th style="width:25%">Business name</th>
-				<td style="width:20%"; align="right">'.$borrower_business.'</td>
+				<td style="width:75%"; align="right">'.$borrower_business.'</td>
 			</tr>
 			<tr>
 				<th style="width:25%">Shop Number</th>
-				<td style="width:20%"; align="right">'.$borrower_shop_number.'</td>
+				<td style="width:75%"; align="right">'.$borrower_shop_number.'</td>
 			</tr>
 			<tr>
 				<th style="width:25%">Products</th>
-				<td style="width:20%"; align="right">'.$borrower_products.'</td>
+				<td style="width:75%"; align="right">'.$borrower_products.'</td>
 			</tr>
 		</table>
 		';
@@ -967,23 +967,23 @@ function getNextofKinDetails($connect, $borrower_id){
 		<table class="table table-bordered">
 			<tr>
 				<th style="width:25%">Fullname</th>
-				<td style="width:20%"; align="right">'.$next_of_kin_fullnames.'</td>
+				<td style="width:75%"; align="right">'.$next_of_kin_fullnames.'</td>
 			</tr>
 			<tr>
 				<th style="width:25%">Relationship</th>
-				<td style="width:20%"; align="right">'.$next_of_kin_relationship.'</td>
+				<td style="width:75%"; align="right">'.$next_of_kin_relationship.'</td>
 			</tr>
 			<tr>
 				<th style="width:25%">NRC Number</th>
-				<td style="width:20%"; align="right">'.$next_of_kin_nrc.'</td>
+				<td style="width:75%"; align="right">'.$next_of_kin_nrc.'</td>
 			</tr>
 			<tr>
 				<th style="width:25%">Phone</th>
-				<td style="width:20%"; align="right">'.$next_of_kin_phone.'</td>
+				<td style="width:75%"; align="right">'.$next_of_kin_phone.'</td>
 			</tr>
 			<tr>
 				<th style="width:25%">Home Address</th>
-				<td style="width:20%"; align="right">'.$next_of_kin_address.'</td>
+				<td style="width:75%"; align="right">'.$next_of_kin_address.'</td>
 			</tr>
 		</table>
 		';

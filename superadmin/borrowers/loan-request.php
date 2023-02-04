@@ -3,6 +3,7 @@
 	require ("../addons/tip.php");
   	if(isset($_GET['client-id'])){
         $borrower_id = base64_decode($_GET['client-id']);
+        $application_id = base64_decode($_GET['application_id']);
     }else{
         //return to main page
     }
@@ -34,7 +35,12 @@
 							<div class="card card-primary card-outline">
 								<div class="card-header">
 									<h4  class="card-title"><?php echo getBorrowerFullNamesByCardId($connect, $borrower_id) ?>'s Profile</h4>
-								</div>
+                                    <div class="card-tools">
+                                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                            <i class="fas fa-minus"></i>
+                                        </button>
+                                    </div>
+                                </div>
 								<div class="card-body box-profile">
 									<?php echo getClientsDetails($connect, $borrower_id)?>
 									<div class="border-top border-dark mt-4 mb-4"></div>
@@ -54,7 +60,103 @@
 						</div>
 					</div>
                     <div class="col-md-6">
-
+                        <div class="bg-light p-1">
+							<div class="card card-primary card-outline">
+								<div class="card-header">
+									<h4  class="card-title"><?php echo getBorrowerFullNamesByCardId($connect, $borrower_id) ?>'s Application</h4>
+                                    <div class="card-tools">
+                                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                            <i class="fas fa-minus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+								<div class="card-body box-profile">
+									<?php 
+                                        $query = $connect->prepare("SELECT * FROM loan_applications WHERE id = ? AND applicant_id = ? ");
+                                        $query->execute([$application_id, $borrower_id]);
+                                        $row = $query->fetch();
+                                        extract($row);
+                                    ?>
+									<h4 class="text-secondary"><span id="working">Alternative Contact Details</span></h4>
+                                    <table class="table table-bordered">
+                                        <tr>
+                                            <th style="width: 35%;">Fullnames</th>
+                                            <td style="width: 65%" align="right"><?php echo $alt_contact_names?></td>
+                                        </tr>
+                                        <tr>
+                                            <th style="width: 35%;">Phone number</th>
+                                            <td style="width: 65%" align="right"><?php echo $alt_contact_phone?></td>
+                                        </tr>
+                                        <tr>
+                                            <th style="width: 35%;">Relationship</th>
+                                            <td style="width: 65%" align="right"><?php echo $alt_contact_relationship?></td>
+                                        </tr>
+                                    </table>
+                                    
+									<div class="border-top border-dark mt-4 mb-4"></div>
+                                    <h4 class="text-secondary"><span id="working">Loan Request Details</span></h4>
+									<table class="table table-bordered">
+                                        <tr>
+                                            <th style="width: 35%;">Application Date</th>
+                                            <td style="width: 65%" align="right"><?php echo date("j F, Y", strtotime($date_submitted))?></td>
+                                        </tr>
+                                        <tr>
+                                            <th style="width: 35%;">Requested Amount</th>
+                                            <td style="width: 65%" align="right"><?php echo $currency?> <?php echo $principle_amount?></td>
+                                        </tr>
+                                        <tr>
+                                            <th style="width: 35%;">Interest Rate</th>
+                                            <td style="width: 65%" align="right"> <?php echo $interest?>% / Month</td>
+                                        </tr>
+                                        <tr>
+                                            <th style="width: 35%;">Gross Loan</th>
+                                            <td style="width: 65%" align="right"><?php echo $currency?> <?php echo $total_loan_amount?></td>
+                                        </tr>
+                                        <tr>
+                                            <th style="width: 35%;">Processing Fee</th>
+                                            <td style="width: 65%" align="right"><?php echo $currency?> <?php echo $loan_processing_fee?></td>
+                                        </tr>
+                                        <tr>
+                                            <th style="width: 35%;">Net Loan Amount</th>
+                                            <td style="width: 65%" align="right"><?php echo $currency?> <?php echo $net_loan?></td>
+                                        </tr>
+                                        <tr>
+                                            <th style="width: 35%;">Period</th>
+                                            <td style="width: 65%" align="right"><?php echo $days?> Days | <?php echo $weeks?> Weeks</td>
+                                        </tr>
+                                    </table>
+                                    <div class="border-top border-dark mt-4 mb-4"></div>
+                                    <h4 class="text-secondary"><span id="working">Repayment Details</span></h4>
+                                    <table class="table table-bordered">
+                                        <tr>
+                                            <th style="width: 35%;">Repayment Start Date</th>
+                                            <td style="width: 65%" align="right"><?php echo date("j F, Y", strtotime($repayment_start_date))?> </td>
+                                        </tr>
+                                        <tr>
+                                            <th style="width: 35%;">Daily Amount</th>
+                                            <td style="width: 65%" align="right"> <?php echo $currency?> <?php echo $repayment_amount_daily?> </td>
+                                        </tr>
+                                        <tr>
+                                            <th style="width: 35%;">Weekly Amount</th>
+                                            <td style="width: 65%" align="right"> <?php echo $currency?> <?php echo $repayment_amount_weekly?> </td>
+                                        </tr>
+                                        <tr>
+                                            <th style="width: 35%;">Monthly Amount</th>
+                                            <td style="width: 65%" align="right"> <?php echo $currency?> <?php echo $repayment_amount_month?> </td>
+                                        </tr>
+                                    </table>
+                                    <div class="mt-4 mb-4">
+                                        <?php if($status === 'pending'):?>
+                                            <a href="<?php echo $borrower_id?>" id="<?php echo $id?>" data-amount="<?php echo $principle_amount?>" class="approveLoan btn btn-success">Approve</a>
+                                            <a href="<?php echo $borrower_id?>" id="<?php echo $id?>" data-amount="<?php echo $principle_amount?>" class="rejectLoan btn btn-danger">Reject</a>
+                                        <?php else:?>
+                                            <button class="btn btn-secondary" type="button"><?php echo ucwords($status)?></button>
+                                        <?php endif;?>
+                                    </div>
+								</div>
+								
+							</div>
+						</div>
                     </div>
                 </div>
             </div>
@@ -78,6 +180,38 @@
                 </div>
             </div>
         </div>
+
+        <!-- Approve Loan -->
+        <div class="modal fade" id="approveModal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h6 class="modal-title">Approve loan for <?php echo getBorrowerFullNamesByCardId($connect, $borrower_id) ?></h6>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <form method="post" id="approveForm">
+                        <div class="modal-body">
+                            
+                            <label>Add comment</label>
+                            <textarea name="comment" id="comment" rows="4" class="form-control" required></textarea>
+                            <input type="hidden" name="borrower_id" id="borrower_id">
+                            <input type="hidden" name="loan_id" id="loan_id">
+                            <input type="hidden" name="branch_id" id="branch_id" value="<?php echo $BRANCHID ?>">
+                            <input type="hidden" name="parent_id" id="parent_id" value="<?php echo $_SESSION['parent_id']?>">
+                            <input type="hidden" name="amount" id="amount">
+                                <!-- <p>Loan wil be saved in the expenses</p> -->
+                            
+                        <div class="modal-footer justify-content-between">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-success" id="btnSubmit">Submit and Pay</button>
+                        </div>
+                    </form>
+                    </div>
+                </div>
+            </div>
+        </div>
 	</div>
 
 	<?php include("../addon_footer.php")?>
@@ -95,6 +229,36 @@
                 }
             })
         });
+
+        $(document).on('click', '.approveLoan', function(e){
+            e.preventDefault();
+            $("#approveModal").modal("show");
+            var borrower_id = $(this).attr('href');
+            var loan_id = $(this).attr('id');
+            var amount = $(this).data('amount');
+            document.getElementById('borrower_id').value = borrower_id;
+            document.getElementById('loan_id').value = loan_id;
+            document.getElementById('amount').value = amount;
+            
+        })
+
+        $("#approveForm").submit(function(e){
+            e.preventDefault();
+            var data = $(this).serialize();
+            
+            $.ajax({
+                url:'borrowers/loans/sunctionLoan',
+                method:'post',
+                data:data,
+                beforeSend:function(){
+                    $("#btnSubmit").html('Processing...');
+                },
+                success:function(data){
+                    successToast(data);
+                    $("#btnSubmit").html("Submit and Pay");
+                }
+            })
+        })
     </script>
 </body>
 </html>
