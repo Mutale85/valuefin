@@ -153,7 +153,7 @@
           </li>
           <!-- Show No Nav Till Branch is Selected -->
           <?php if (isset($_COOKIE['SelectedBranch'])):?>
-          <li class="nav-header text-danger border-bottom"><b>CLIENTS</b></li>
+          <li class="nav-header text-danger border-top pb-2"><b>CLIENTS</b></li>
           <li class="nav-item">
             <a href="borrowers/" class="nav-link">
               <i class="bi bi-plus-circle text-danger nav-icon"></i>
@@ -186,13 +186,13 @@
               <p>SMS Clients</p>
             </a>
           </li>
-          <li class="nav-item">
-            <a href="borrowers/email_borrower" class="nav-link">
+          <!-- <li class="nav-item">
+            <a href="borrowers/send-borrower-email" class="nav-link">
               <i class="bi bi-mailbox nav-icon"></i>
               <p>Email Clients</p>
             </a>
-          </li>
-          <li class="nav-header text-danger border-bottom"><b>LOANS</b></li>
+          </li> -->
+          <li class="nav-header text-danger border-top pb-2"><b>LOANS</b></li>
           
              
           <li class="nav-item">
@@ -207,23 +207,26 @@
               <p> Loan Settings</p>
             </a>
           </li>
+
+          <li class="nav-header text-danger border-top pb-2"><b>LOAN PAYMENTS</b></li>
+          <li class="nav-item">
+            <a href="loans/disbursed-loans" class="nav-link">
+              <i class="bi bi-wallet nav-icon"></i>
+              <p>Disbursed Funds </p>
+            </a>
+          </li>
           <li class="nav-item">
             <a href="loans/expected-payments" class="nav-link">
               <i class="bi bi-piggy-bank nav-icon"></i>
               <p>Expected Payments </p>
             </a>
           </li> 
-          <li class="nav-item">
-            <a href="loans/disbursed_loans" class="nav-link">
-              <i class="bi bi-binoculars nav-icon"></i>
-              <p>Disbursed Funds </p>
-            </a>
-          </li>
+          
 
           <li class="nav-item">
-            <a href="loans/collected_loans" class="nav-link">
+            <a href="loans/collected-loans" class="nav-link">
               <i class="bi bi-bucket nav-icon"></i>
-              <p>Collected Funds </p>
+              <p>Payment Received </p>
             </a>
           </li>
 
@@ -288,7 +291,7 @@
             </ul>
           </li>
               
-          <?php if($_SESSION['user_role'] == 'Admin'):?>
+          <?php if($_SESSION['user_role'] == 'superAdmin'):?>
 
             <li class="nav-item">
             <a href="navtree" class="nav-link">
@@ -299,13 +302,8 @@
               </p>
             </a>
             <ul class="nav nav-treeview">
-              <li class="nav-header text-danger border-bottom">Settings</li>
-              <li class="nav-item">
-                <a href="loans/loan-settings" class="nav-link">
-                  <i class="bi bi-gear-wide-connected nav-icon"></i>
-                  <p>Loan Settings</p>
-                </a>
-              </li>
+              <li class="nav-header text-danger border-top pb-2">SETTINGS</li>
+              
               <li class="nav-item">
                 <a href="members/email-settings" class="nav-link text-danger">
                   <i class="bi bi-mailbox nav-icon"></i>
@@ -325,7 +323,7 @@
                   <p>Create Positions</p>
                 </a>
               </li>
-              <li class="nav-header text-success border-bottom">Staff Care</li>
+              <li class="nav-header text-success border-top pb-2">Staff Care</li>
               <li class="nav-item">
                 <a href="members/add-staff-members" class="nav-link  text-success">
                   <i class="bi bi-person-plus nav-icon"></i>
@@ -351,7 +349,7 @@
                 </a>
               </li>
 
-              <li class="nav-header text-primary border-bottom">Management</li>
+              <li class="nav-header text-primary border-top pb-2">Management</li>
               <li class="nav-item">
                 <a href="members/settings" class="nav-link">
                   <i class="bi bi-gear-wide nav-icon"></i>

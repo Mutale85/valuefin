@@ -149,8 +149,10 @@
                                         <?php if($status === 'pending'):?>
                                             <a href="<?php echo $borrower_id?>" id="<?php echo $id?>" data-amount="<?php echo $principle_amount?>" class="approveLoan btn btn-success">Approve</a>
                                             <a href="<?php echo $borrower_id?>" id="<?php echo $id?>" data-amount="<?php echo $principle_amount?>" class="rejectLoan btn btn-danger">Reject</a>
+                                        <?php elseif($status === 'approved'):?>
+                                            <button class="btn btn-success" type="button">Loan <?php echo ucwords($status)?></button>
                                         <?php else:?>
-                                            <button class="btn btn-secondary" type="button"><?php echo ucwords($status)?></button>
+                                            <button class="btn btn-danger" type="button">Loan <?php echo ucwords($status)?></button>
                                         <?php endif;?>
                                     </div>
 								</div>
@@ -186,7 +188,7 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h6 class="modal-title">Approve loan for <?php echo getBorrowerFullNamesByCardId($connect, $borrower_id) ?></h6>
+                        <h6 class="modal-title"><span id="titleState"> Approve </span> loan for <?php echo getBorrowerFullNamesByCardId($connect, $borrower_id) ?></h6>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -194,18 +196,19 @@
                     <form method="post" id="approveForm">
                         <div class="modal-body">
                             
-                            <label>Add comment</label>
+                            <label>Add remarks <small class="text-danger">(required)</small></label>
                             <textarea name="comment" id="comment" rows="4" class="form-control" required></textarea>
                             <input type="hidden" name="borrower_id" id="borrower_id">
                             <input type="hidden" name="loan_id" id="loan_id">
                             <input type="hidden" name="branch_id" id="branch_id" value="<?php echo $BRANCHID ?>">
                             <input type="hidden" name="parent_id" id="parent_id" value="<?php echo $_SESSION['parent_id']?>">
                             <input type="hidden" name="amount" id="amount">
+                            <input type="hidden" name="loan_status" id="loan_status">
                                 <!-- <p>Loan wil be saved in the expenses</p> -->
                             
                         <div class="modal-footer justify-content-between">
                             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-success" id="btnSubmit">Submit and Pay</button>
+                            <button type="submit" class="btn btn-success" id="btnSubmit">Submit</button>
                         </div>
                     </form>
                     </div>
@@ -230,15 +233,25 @@
             })
         });
 
-        $(document).on('click', '.approveLoan', function(e){
+        $(document).on('click', '.approveLoan, .rejectLoan', function(e){
             e.preventDefault();
             $("#approveModal").modal("show");
             var borrower_id = $(this).attr('href');
             var loan_id = $(this).attr('id');
             var amount = $(this).data('amount');
+            var text = $(this).text();
             document.getElementById('borrower_id').value = borrower_id;
             document.getElementById('loan_id').value = loan_id;
             document.getElementById('amount').value = amount;
+            document.getElementById('titleState').innerText = text;
+            document.getElementById('loan_status').value = text;
+            if(text === 'Reject'){
+                $("#btnSubmit").addClass('btn-danger');
+                $("#btnSubmit").html(text + ' and close');
+            }else{
+                $("#btnSubmit").removeClass('btn-danger');
+                $("#btnSubmit").html(text + ' and Pay');
+            }
             
         })
 
@@ -255,10 +268,14 @@
                 },
                 success:function(data){
                     successToast(data);
-                    $("#btnSubmit").html("Submit and Pay");
+                    setTimeout(function(){
+                        location.reload();
+                    }, 3000);
+                    $("#btnSubmit").html("Submit");
                 }
             })
         })
+
     </script>
 </body>
 </html>

@@ -780,17 +780,7 @@
 		return $output;
 	}
 
-	function getParentIBByBorroweresPhone($connect, $borrower_phone) {
-		$output = '';
-		$query = $connect->prepare("SELECT * FROM `borrowers`  WHERE borrower_phone = ?");
-		$query->execute(array($borrower_phone));
-		$row = $query->fetch();
-		if ($row) {
-			extract($row);
-			$output = $parent_id;
-		}
-		return $output;;
-	}
+
 
 	function getCurrency($connect, $parent_id){
 		$output = '';
@@ -1002,5 +992,80 @@ function getClientsImage($connect, $borrower_id){
 	}
 	return $output;
 } 
+
+function getClientsPhone($connect, $borrower_id){
+	$output = '';
+	$query = $connect->prepare("SELECT * FROM borrowers_details WHERE borrower_id = ? ");
+	$query->execute([$borrower_id]);
+	$row = $query->fetch();
+	if($row){
+		extract($row);
+		$output = $borrower_phone;
+	}
+	return $output;
+} 
+
+function SMSNOW($to, $message, $api_key, $sender_id){
+	$url = 'https://bulksms.zamtel.co.zm/api/v2.1/action/send/api_key/'.$api_key.'/contacts/'.$to.'/senderId/'.$sender_id.'/message/'.$message.'';
+
+	$gateway_url = $url;
+
+	try {
+	  $ch = curl_init();
+	  curl_setopt($ch, CURLOPT_URL, $gateway_url);
+	  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+	  curl_setopt($ch, CURLOPT_HTTPGET, 1);
+	  curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+	  curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
+	  $output = curl_exec($ch);
+
+	  if (curl_errno($ch)) {
+		$output = curl_error($ch);
+	  }
+	  curl_close($ch);
+
+	}catch (Exception $exception){
+	  echo $exception->getMessage();
+	} 
+}
+
+function getLoanID($connect, $borrower_id){
+	$output = '';
+	$query = $connect->prepare("SELECT * FROM loan_applications WHERE  applicant_id =  ? AND status = 'approved' AND repayment_status = '0' ");
+	$query->execute([ $borrower_id]);
+	$row = $query->fetch();
+	if($row){
+		extract($row);
+		$output = $id;
+	}
+	
+	return $output;
+}
+
+function getClientsTotalLoan($connect, $loan_id, $borrower_id){
+	$output = '';
+	$query = $connect->prepare("SELECT * FROM loan_applications WHERE id = ? AND applicant_id =  ? AND status = 'approved' AND repayment_status = '0' ");
+	$query->execute([$loan_id, $borrower_id]);
+	$row = $query->fetch();
+	if($row){
+		extract($row);
+		$output = $total_loan_amount;
+	}else{
+		$output = '';
+	}
+	return $output;
+}
+
+function getClientsLoanDueDate($connect, $loan_id, $borrower_id){
+	$output = '';
+	$query = $connect->prepare("SELECT * FROM loan_applications WHERE id = ? AND applicant_id =  ? AND status = 'approved' AND repayment_status = '0' ");
+	$query->execute([$loan_id, $borrower_id]);
+	$row = $query->fetch();
+	if($row){
+		extract($row);
+		$output = date("l, jS \of F Y ", strtotime($repayment_start_date));
+	}
+	return $output;
+}
 ?>
 

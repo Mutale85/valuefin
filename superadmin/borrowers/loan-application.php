@@ -242,13 +242,9 @@
 												</select>
 											</div>
 											
-											<!-- <div class="col-md-12">
-												<div id="calculation_result"></div>
-											</div> -->
 										</div>
 									</div>
 									<div class="card-footer justify-content-between">
-										<!-- <button class="btn btn-secondary" type="button" id="calculate">Calculate Loan</button> -->
 										<button type="submit" class="btn btn-primary" id="saveLoan">Submit Loan</button>
 									</div>
 									<?php
@@ -260,9 +256,7 @@
 					</div>
 					<div class="col-md-1"></div>
 				</div>
-				<!-- <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-default">
-                  Launch Default Modal
-                </button> -->
+				
 				<!-- /.modal-content -->
 				<div class="modal fade" id="modal-default">
 					<div class="modal-dialog">
