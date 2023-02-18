@@ -22,24 +22,6 @@
 <script>
   $.widget.bridge('uibutton', $.ui.button)
 </script>
-<!-- Bootstrap 4 -->
-<!-- <script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script> -->
-<!-- ChartJS -->
-<!-- <script src="plugins/chart.js/Chart.min.js"></script> -->
-<!-- Sparkline -->
-<!-- <script src="plugins/sparklines/sparkline.js"></script> -->
-<!-- JQVMap -->
-<!-- <script src="plugins/jqvmap/jquery.vmap.min.js"></script> -->
-<!-- <script src="plugins/jqvmap/maps/jquery.vmap.usa.js"></script> -->
-<!-- jQuery Knob Chart -->
-<!-- <script src="plugins/jquery-knob/jquery.knob.min.js"></script> -->
-<!-- <script src="plugins/jquery/jquery.min.js"></script> -->
-<!-- daterangepicker -->
-<!-- <script src="plugins/moment/moment.min.js"></script> -->
-<!-- <script src="plugins/daterangepicker/daterangepicker.js"></script> -->
-<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script> -->
-<!-- Tempusdominus Bootstrap 4 -->
-<!-- <script src="plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script> -->
 
 <!-- Summernote -->
 <script src="plugins/summernote/summernote-bs4.min.js"></script>
@@ -53,10 +35,34 @@
 <!-- <script src="dist/js/pages/dashboard.js"></script> -->
 <script src="../intl.17/build/js/intlTelInput.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-<script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+
+<!-- <script type="text/javascript" src="https://cdn.datatables.net/1.13.2/js/jquery.dataTables.min.js"></script> -->
+
+<!-- New Data Tables Scripts -->
+<!-- <script type="text/javascript" src="https://code.jquery.com/jquery-3.5.1.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/1.13.2/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/2.3.4/js/dataTables.buttons.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/2.3.4/js/buttons.html5.min.js"></script> -->
+
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.5.1.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/1.13.2/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/2.3.4/js/dataTables.buttons.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/2.3.4/js/buttons.html5.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/2.3.4/js/buttons.print.min.js"></script>
+<!-- END OF datatables -->
+<!-- <script src="https://code.jquery.com/jquery-3.6.0.js"></script> -->
 <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
-<script type="text/javascript" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
 <script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<!-- Apex Charts -->
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
+
 
 <script>
   $(document).on("click", ".NavsetCookies", function(e){
@@ -92,4 +98,30 @@
         toastr.options.positionClass = "toast-top-center";
         toastr.options.showDuration = 3000;
     }
+    // ================================= DISPLAYS ======================================
+		function successNow(msg){
+			toastr.success(msg);
+	      	toastr.options.progressBar = true;
+	      	toastr.options.positionClass = "toast-top-center";
+	      	toastr.options.showDuration = 1000;
+	    }
+
+		function errorNow(msg){
+		    toastr.error(msg);
+      	toastr.options.progressBar = true;
+      	toastr.options.positionClass = "toast-top-center";
+      	toastr.options.showDuration = 1000;
+    }
+	
+    $(document).ready(function() {
+        $("#allTables").DataTable({
+            dom: 'Bfrtip',
+            buttons: [
+                'copyHtml5',
+                'excelHtml5',
+                'csvHtml5',
+                'pdfHtml5'
+            ]
+        });
+    } );
 </script>

@@ -85,7 +85,7 @@
             ?>
             <li class="nav-item menu-open">
               <a href="./" class="nav-link active">
-                <i class="nav-icon fas fa-th"></i>
+                <i class="nav-icon bi bi-shop"></i>
                 <p>
                   <?php echo ucwords(getBranchName($connect, $_SESSION['parent_id'], $branch_id))?>
                 </p>
@@ -105,7 +105,7 @@
           
           <li class="nav-item">
             <a href="navtree" class="nav-link">
-              <i class="nav-icon fas fa-th"></i>
+              <i class="nav-icon bi bi-shop-window"></i>
               <p>
                 Branches
                 <i class="right fas fa-angle-left"></i>
@@ -114,7 +114,7 @@
 
             <ul class="nav nav-treeview">
               <?php
-                $sql = $connect->prepare("SELECT  * FROM allowed_branches WHERE staff_id = ? AND parent_id = ? ");
+                $sql = $connect->prepare("SELECT * FROM allowed_branches WHERE staff_id = ? AND parent_id = ? ");
                 $sql->execute(array($_SESSION['user_id'], $_SESSION['parent_id']));
                 if($sql->rowCount() > 0){
                 foreach ($sql->fetchAll() as $row) {
@@ -122,7 +122,7 @@
                     if ($branch_id == $BRANCHID) {?>
                       <li class="nav-item">
                         <a href="" class="nav-link NavsetCookies" data-id="<?php echo base64_encode($branch_id)?>" id="<?php echo ucwords(getBranchName($connect, $_SESSION['parent_id'], $branch_id))?>">
-                          <i class="bi bi-circle-fill nav-icon text-success"></i>
+                          <i class="bi bi-shop nav-icon text-success"></i>
                           <p><?php echo ucwords(getBranchName($connect, $_SESSION['parent_id'], $branch_id))?></p>
                         </a>
                       </li>
@@ -130,7 +130,7 @@
                     }else{?>
                       <li class="nav-item">
                         <a href="" class="nav-link NavsetCookies" data-id="<?php echo base64_encode($branch_id)?>" id="<?php echo ucwords(getBranchName($connect, $_SESSION['parent_id'], $branch_id))?>">
-                          <i class="bi bi-collection nav-icon"></i>
+                          <i class="bi bi-shop-window nav-icon"></i>
                           <p><?php echo ucwords(getBranchName($connect, $_SESSION['parent_id'], $branch_id))?></p>
                         </a>
                       </li>
@@ -141,7 +141,7 @@
                 }else{?>
                   <li class="nav-item">
                         <a href="branches/branch" type="button" class="nav-link" >
-                          <i class="bi bi-collection nav-icon"></i>
+                          <i class="bi bi-shop-window nav-icon"></i>
                           Create Branch
                         </a>
 
@@ -153,10 +153,10 @@
           </li>
           <!-- Show No Nav Till Branch is Selected -->
           <?php if (isset($_COOKIE['SelectedBranch'])):?>
-          <li class="nav-header text-danger border-top pb-2"><b>CLIENTS</b></li>
+          <li class="nav-header border-top pb-2"><b>CLIENTS</b></li>
           <li class="nav-item">
             <a href="borrowers/" class="nav-link">
-              <i class="bi bi-plus-circle text-danger nav-icon"></i>
+              <i class="bi bi-person-add nav-icon"></i>
               <p>Add Clients</p>
             </a>
           </li>  
@@ -196,7 +196,7 @@
           
              
           <li class="nav-item">
-            <a href="borrowers/all-loan-applications" class="nav-link">
+            <a href="borrowers/all-loan-applications?branch_id=<?php echo base64_encode($BRANCHID)?>&parent_id=<?php echo base64_decode($_SESSION['parent_id'])?>" class="nav-link">
               <i class="bi bi-wallet nav-icon"></i>
               <p> Loan Applications </p>
             </a>
@@ -209,22 +209,28 @@
           </li>
 
           <li class="nav-header text-danger border-top pb-2"><b>LOAN PAYMENTS</b></li>
-          <li class="nav-item">
+          <!-- <li class="nav-item">
             <a href="loans/disbursed-loans" class="nav-link">
               <i class="bi bi-wallet nav-icon"></i>
               <p>Disbursed Funds </p>
             </a>
-          </li>
-          <li class="nav-item">
-            <a href="loans/expected-payments" class="nav-link">
-              <i class="bi bi-piggy-bank nav-icon"></i>
+          </li> -->
+          <!-- <li class="nav-item">
+            <a href="loans/expected-paymentsdaily-collections" class="nav-link">
+              <i class="bi bi-bucket nav-icon"></i>
               <p>Expected Payments </p>
+            </a>
+          </li> -->
+          <li class="nav-item">
+            <a href="loans/daily-collections?branch_id=<?php echo base64_encode($BRANCHID)?>&parent_id=<?php echo base64_decode($_SESSION['parent_id'])?>" class="nav-link">
+              <i class="bi bi-piggy-bank nav-icon"></i>
+              <p>Daily Collections </p>
             </a>
           </li> 
           
 
           <li class="nav-item">
-            <a href="loans/collected-loans" class="nav-link">
+            <a href="loans/collected-loans?branch_id=<?php echo base64_encode($BRANCHID)?>&parent_id=<?php echo base64_decode($_SESSION['parent_id'])?>" class="nav-link">
               <i class="bi bi-bucket nav-icon"></i>
               <p>Payment Received </p>
             </a>
@@ -262,7 +268,6 @@
 
           <li class="nav-item">
             <a href="navtree" class="nav-link">
-              <!-- <i class="nav-icon bi bi-bank"></i> -->
               <i class="nav-icon bi bi-arrow-left-right"></i>
               <p>
                 Reports
@@ -271,19 +276,19 @@
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="reports/issued-loans" class="nav-link">
-                  <i class="bi bi-plus-circle text-primary nav-icon"></i>
+                <a href="reports/issued-loans?branch_id=<?php echo base64_encode($BRANCHID)?>&parent_id=<?php echo base64_decode($_SESSION['parent_id'])?>" class="nav-link">
+                  <i class="bi bi-wallet2 text-primary nav-icon"></i>
                   <p>Issued Loans</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="reports/arrear-loans" class="nav-link">
+                <a href="reports/arrear-loans?branch_id=<?php echo base64_encode($BRANCHID)?>&parent_id=<?php echo base64_decode($_SESSION['parent_id'])?>" class="nav-link">
                   <i class="bi bi-circle text-danger nav-icon"></i>
                   <p>Arrear Loans</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="reports/fully-paid-loans" class="nav-link">
+                <a href="reports/fully-paid-loans?branch_id=<?php echo base64_encode($BRANCHID)?>&parent_id=<?php echo base64_decode($_SESSION['parent_id'])?>" class="nav-link">
                   <i class="bi bi-circle text-primary nav-icon"></i>
                   <p>Fully Repaid Loans</p>
                 </a>
@@ -302,58 +307,38 @@
               </p>
             </a>
             <ul class="nav nav-treeview">
-              <li class="nav-header text-danger border-top pb-2">SETTINGS</li>
               
+              <li class="nav-header text-warning border-top pb-2">PERSONNEL DATA</li>
               <li class="nav-item">
-                <a href="members/email-settings" class="nav-link text-danger">
-                  <i class="bi bi-mailbox nav-icon"></i>
-                  <p>Email Settings</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="members/sms-create-sender-id" class="nav-link text-danger">
-                  <i class="bi bi-reply-all nav-icon"></i>
-                  <p>SMS Settings</p>
-                </a>
-              </li>
-              
-              <li class="nav-item">
-                <a href="members/positions" class="nav-link text-danger">
-                  <i class="bi bi-plus-square nav-icon"></i>
-                  <p>Create Positions</p>
-                </a>
-              </li>
-              <li class="nav-header text-success border-top pb-2">Staff Care</li>
-              <li class="nav-item">
-                <a href="members/add-staff-members" class="nav-link  text-success">
+                <a href="members/add-staff-members" class="nav-link  text-warning">
                   <i class="bi bi-person-plus nav-icon"></i>
-                  <p>Add Staff</p>
+                  <p>Add Personnel</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="members/staff-members" class="nav-link  text-success">
-                  <i class="bi bi-arrow-right-square nav-icon"></i>
-                  <p>View Staff</p>
+                <a href="members/staff-members" class="nav-link  text-warning">
+                  <i class="bi bi-person-badge nav-icon"></i>
+                  <p>View Personnel</p>
                 </a>
               </li>
-              <li class="nav-item">
-                <a href="members/email-staff" class="nav-link  text-success">
+              <!-- <li class="nav-item">
+                <a href="members/email-staff" class="nav-link  text-warning">
                   <i class="bi bi-mailbox nav-icon"></i>
                   <p>Email Staff</p>
                 </a>
-              </li>
+              </li> -->
               <li class="nav-item">
-                <a href="members/sms-staff" class="nav-link text-success">
+                <a href="members/sms-staff" class="nav-link text-warning">
                   <i class="bi bi-reply-all nav-icon"></i>
-                  <p>SMS Staff</p>
+                  <p>SMS Personnel</p>
                 </a>
               </li>
 
-              <li class="nav-header text-primary border-top pb-2">Management</li>
+              <li class="nav-header text-white border-top pb-2">MANAGEMENT</li>
               <li class="nav-item">
                 <a href="members/settings" class="nav-link">
                   <i class="bi bi-gear-wide nav-icon"></i>
-                  <p>Company Settings</p>
+                  <p>Company Details</p>
                 </a>
               </li>
               <li class="nav-item">
@@ -363,11 +348,54 @@
                 </a>
               </li>
               <li class="nav-item">
+                <a href="members/files-uploaded" class="nav-link">
+                  <i class="bi bi-building nav-icon"></i>
+                  <p>All Uploads</p>
+                </a>
+              </li>
+              <li class="nav-item">
                 <a href="members/login_data" class="nav-link">
                   <i class="bi-clock-history nav-icon"></i>
                   <p>Logs</p>
                 </a>
               </li>
+              <li class="nav-header text-white border-top pb-2">CONSOLIDATED DATA</li>
+              
+              <li class="nav-item">
+                <a href="all-data/all-clients" class="nav-link text-white">
+                  <i class="bi bi-people nav-icon"></i>
+                  <p>All Clients</p>
+                </a>
+              </li>
+              <!-- <li class="nav-item">
+                <a href="all-data/sms-create-sender-id" class="nav-link text-white">
+                  <i class="bi bi-wallet nav-icon"></i>
+                  <p>Issued Loans</p>
+                </a>
+              </li>
+              
+              <li class="nav-item">
+                <a href="all-data/sms-create-sender-id" class="nav-link text-white">
+                  <i class="bi bi-piggy-bank nav-icon"></i>
+                  <p>Collected Loans</p>
+                </a>
+              </li>
+
+              <li class="nav-item">
+                <a href="all-data/sms-create-sender-id" class="nav-link text-white">
+                  <i class="bi bi-box nav-icon"></i>
+                  <p>Arrear Loans</p>
+                </a>
+              </li> -->
+              
+              <!-- 
+              <li class="nav-item">
+                <a href="members/positions" class="nav-link text-white">
+                  <i class="bi bi-plus-square nav-icon"></i>
+                  <p>Create Positions</p>
+                </a>
+              </li>
+            -->
             </ul>
           </li>
           

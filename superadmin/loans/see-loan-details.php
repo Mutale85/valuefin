@@ -12,6 +12,51 @@
 <head>
 	<title>Loan Details</title>
 	<?php include("../addon_header.php");?>
+	<style>
+		.letterhead {
+		font-family: Arial, sans-serif;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-bottom: 20px;
+		border: 2px solid #000080;
+		border-radius: 10px;
+		padding: 20px;
+		}
+		.logo {
+		width: 150px;
+		height: auto;
+		}
+		.company-name {
+		font-size: 20px;
+		font-weight: bold;
+		color: #000080;
+		margin-bottom: 10px;
+		}
+		.company-info {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-end;
+		font-size: 16px;
+		margin-left: 20px;
+		}
+		.location {
+		margin-bottom: 5px;
+		}
+		.contacts {
+		margin-bottom: 5px;
+		}
+		@media (max-width: 600px) {
+		.letterhead {
+			flex-direction: column;
+			align-items: center;
+		}
+		.company-info {
+			align-items: center;
+			margin-left: 0;
+		}
+		}
+	</style>
 </head>
 
 <body class="hold-transition sidebar-mini layout-fixed">
@@ -20,21 +65,29 @@
 	<div class="content-wrapper">
 		<?php include("../addon_content_header.php")?>
         <section class="content bg-light"> 
-			
+			<?php 
+				$sql = $connect->prepare("SELECT * FROM loan_applications WHERE id = ? AND applicant_id = ?");
+				$sql->execute([$loan_id, $borrower_id]);
+				$row = $sql->fetch();
+				$balance = $row['total_loan_amount'];
+				$repayment_start_date = $row['repayment_start_date'];
+				$currency = $row['currency'];
+			?>
 			<div class="container mt-5">
 				<div class="row">
 					<div class="col-md-12">
-						<div class="d-flex align-items-center mb-3 p-3">
-							<div class="profile-picture mr-3">
-								<img src="<?php echo getClientsImage($connect, $borrower_id) ?>" alt="Profile Picture" class="rounded-circle" width="100" height="100">
-							</div>
-							<div class="profile-info">
-								<h2><?php echo getBorrowerFullNamesByCardId($connect, $borrower_id) ?></h2>
-								<p>Loan Number: <?php echo $loan_id?></p>
-								<p>Borrowed Amount: <b>ZMW <?php echo getClientsTotalLoan($connect, $loan_id, $borrower_id)?></b></p>
-								<p>Due date <?php echo getClientsLoanDueDate($connect, $loan_id, $borrower_id)?></p>
+
+						<div class="letterhead">
+							<img src="<?php echo getClientsImage($connect, $borrower_id) ?>" alt="<?php echo getClientsImage($connect, $borrower_id) ?>" class="logo">
+							<div class="company-info">
+								<div class="company-name"><?php echo getBorrowerFullNamesByCardId($connect, $borrower_id) ?></div>
+								<div class="location">Loan Number: <?php echo $loan_id?></div>
+								<div class="contacts">Borrowed Amount: <?php echo $currency?> <?php echo $balance?></div>
+								<div class="contacts">Due Date: <?php echo date("l, jS \of F Y ", strtotime($repayment_start_date))?></div>
+								<div class="contacts">Days Running: <?php echo getLoanApprovedDays($connect, $loan_id, $borrower_id)?></div>
 							</div>
 						</div>
+						
 					</div>
 					<div class="col-md-12">
 						<div class="bg-light p-1">
@@ -84,18 +137,18 @@
 												$numRows = $query->rowCount();
 												$i = 1;
 												if ($numRows > 0 ) {
-													
-													$i = 1;
 													foreach ($query->fetchAll() as $row) {
 														extract($row);
-														$month = date('F', strtotime($paid_date))
+														$month = date('F', strtotime($paid_date));
+														//$i++;
 													?>
 														<tr>
-															<td>#<?php echo $i?> <?php echo $currency ?> <?php echo $amount?></td>
+															<td> <?php echo $currency ?> <?php echo $amount?></td>
 															<td><?php echo date("l, jS \of F Y ", strtotime($paid_date))?></td>
 															<td><?php echo $currency ?> <?php echo $balance ?></td>								
 															<!-- <td><?php echo getClientsLoanDueDate($connect, $loan_id, $borrower_id)?></td> -->
 														</tr>
+
 												<?php
 													}
 												}else{
@@ -104,6 +157,9 @@
 											?>
 										</tbody>
 									</table>
+								</div>
+								<div class="card-footer">
+									<a href="" class="btn btn-primary"><i class="bi bi-printer"></i> Print Statement</a>
 								</div>
 							</div>
 						</div>

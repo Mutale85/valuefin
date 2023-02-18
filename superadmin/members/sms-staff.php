@@ -1,167 +1,120 @@
 <?php 
-  	require ("../includes/db.php");
-  	require ("../includes/tip.php");  
-	
-
+  	require ("../../includes/db.php");
+	require ("../addons/tip.php");
 ?>
 <!DOCTYPE html>
 <html>
 <head>
 	<title>SMS Staff</title>
-	<?php include("../links.php") ?>
-	<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
-	<link href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css" rel="stylesheet" type="text/css" />
-	<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" rel="stylesheet" type="text/css" />
-	<link rel="stylesheet" href="plugins/toastr/toastr.min.css">
-	<link rel="stylesheet" href="plugins/select2/css/select2.min.css">
+	<?php include("../addon_header.php");?>
 </head>
-<?php
-	
-?>
+
 <body class="hold-transition sidebar-mini layout-fixed">
-	<div class="wrapper">
-		<?php include ("../nav_side.php"); ?>
-		<div class="content-wrapper">
-			<section class="content mt-5">
-      			<div class="container-fluid mt-5 mb-5">
-      				<div class="row mt-5">
-      					<?php 
-      						$query = $connect->prepare("SELECT * FROM sms_settings WHERE parent_id = ?");
-							$query->execute(array($_SESSION['parent_id']));
-							if ($query->rowCount() > 0) {
-								$row = $query->fetch();
-								if ($row) {
-									extract($row);
-									
-									$query_two = $connect->prepare("SELECT * FROM sms_prices WHERE Prefix = ?");
-      								$query_two->execute(array($prefix));
-      								if ($query_two->rowCount() > 0) {
-      									$roq = $query_two->fetch();
-      									if ($roq) {
-      										extract($roq);
-      										$remaining = "Trial SMS: ". (ceil(1 / $Price) - 1);
-      										// We check how many have been sent
-      									}
-      								}else{
-      									$remaining = 'You have no SMS';
-      								}
-								}
-							}else{
-								$remaining = 'Trial SMS: 10';
-							}
-      					?>
-      					<div class="col-md-12 d-flex justify-content-between mt-5 border-bottom border-primary">
-      						<h4><?php echo $remaining?></h4>
-      						<h4><?php echo  getSenderID($connect, $_SESSION['parent_id'])?></h4>
-      					</div>
-      				</div>
-      			</div>
+	<?php include("../addon_top_min_nav.php")?>
+  	<?php include("../addon_side_nav.php")?>
+	<div class="content-wrapper">
+		<?php include("../addon_content_header.php")?>
+        <section class="content bg-light">
+			<div class="container-fluid">
+				<div class="row mt-5">
+					<?php 
+						$query = $connect->prepare("SELECT * FROM sms WHERE parent_id = ?");
+						$query->execute([$_SESSION['parent_id']]);
+						$count =  $query->rowCount();
+						$remaining = 500 - $count;
+						
+					?>
+					<div class="col-md-12 d-flex justify-content-between mt-5 border-bottom border-primary">
+						<h4>Remaining SMS: <?php echo $remaining?></h4>
+						
+					</div>
+				</div>
+			</div>
       			<!-- borrower form -->
-      			<div class="container-fluid pt-3">
-      				<div class="row">
-      					<div class="col-md-12">     						
-      						<div class="card card-primary">
-      							<div class="card-header">
-      								<h4 class="card-title">Staff Members</h4>
-      							</div>
-      							
-  								<?php 
-  									$query = $connect->prepare("SELECT * FROM admins WHERE parent_id = ? ");
-  									$query->execute(array($_SESSION['parent_id']));
-  								?>
-  								<form method="post" class="createMessageForm" id="createMessageForm" enctype="multpart/form-data">
-      								<div class="card-body box-profile">
-										<div class="table table-responsive">
-											<table class="table cell-table" id="myTable">  
-											  
-												<thead>
-													<tr>
-														<th><input type="checkbox" name="check_all" id="check_all"></th>
-														<th>Firstname</th>
-														<th>Lastname</th>
-														<th>Mobile</th>
-														<th>Sent SMS</th>
-														<th>Edit</th>
-													</tr>
-												</thead>  
-												<tbody class="text-dark">  
-												<?php  
+			<div class="container-fluid pt-3">
+				<div class="row">
+					<div class="col-md-12">     						
+						<div class="card card-primary">
+							<div class="card-header">
+								<h4 class="card-title">Staff Members</h4>
+							</div>
+							
+							<?php 
+								$query = $connect->prepare("SELECT * FROM admins WHERE parent_id = ? ");
+								$query->execute(array($_SESSION['parent_id']));
+							?>
+							<form method="post" class="createMessageForm" id="createMessageForm" enctype="multpart/form-data">
+								<div class="card-body box-profile">
+									<div class="table table-responsive">
+										<table class="table cell-table" id="myTable">  
+											
+											<thead>
+												<tr>
+													<th><input type="checkbox" name="check_all" id="check_all"></th>
+													<th>Firstname</th>
+													<th>Lastname</th>
+													<th>Mobile</th>
+													<th>Sent SMS</th>
+													<th>Edit</th>
+												</tr>
+											</thead>  
+											<tbody class="text-dark">  
+											<?php  
 
-													foreach ($query as $row) {
-														extract($row);
-													?>
-													<tr id="<?php echo $id?>">
-														<td data-column="Send SMS"><input type="checkbox" name="checked_user[]" class="checkSingle" id="checked_user" value="<?php echo preg_replace("#[^0-9]#", "", $phonenumber)?>"></td>
-														<td data-column="Firstname"><?php echo $firstname ?></td>
-														<td data-column="Lastname"><?php echo $lastname?></td>
-														<td data-column="Mobile"><?php echo $phonenumber?></td>
-														<td><a href="SMSFIles/sentSMS?user_phone=<?php echo $phonenumber?>&username=<?php echo $firstname ?>">View <?php echo countSMS($connect, $phonenumber, $_SESSION['parent_id'])?> SMS</a></td>
-														<td data-column="Edit">
-															<a href="members/staff-member-edit?staff_id=<?php echo base64_encode($id)?>"><i class="bi bi-pencil-square" aria-hidden="true"></i></a>
-													</tr>
-												<?php	
-													}
+												foreach ($query as $row) {
+													extract($row);
 												?>
-												</tbody>
-												<tfoot>
-													<tr>
-														<th>
-															<span id="counting"></span>
-														</th>
-														<th>Firstname</th>
-														<th>Lastname</th>
-														<th>Mobile</th>
-														<th>Sent SMS</th>
-														<th>Edit</th>
-													</tr>
-												</tfoot>
-											</table>
-										</div>
+												<tr id="<?php echo $id?>">
+													<td data-column="Send SMS"><input type="checkbox" name="checked_user[]" class="checkSingle" id="checked_user" value="<?php echo preg_replace("#[^0-9]#", "", $phonenumber)?>"></td>
+													<td data-column="Firstname"><?php echo $firstname ?></td>
+													<td data-column="Lastname"><?php echo $lastname?></td>
+													<td data-column="Mobile"><?php echo $phonenumber?></td>
+													<td><a href="SMSFiles/view-sent-sms?phonenumber=<?php echo base64_encode($phonenumber)?>&username=<?php echo $firstname ?>">View <?php echo countSMS($connect, $phonenumber, $_SESSION['parent_id'])?> SMS</a></td>
+													<td data-column="Edit">
+														<a href="members/staff-member-edit?staff_id=<?php echo base64_encode($id)?>"><i class="bi bi-pencil-square" aria-hidden="true"></i></a>
+												</tr>
+											<?php	
+												}
+											?>
+											</tbody>
+											<tfoot>
+												<tr>
+													<th>
+														<span id="counting"></span>
+													</th>
+													<th>Firstname</th>
+													<th>Lastname</th>
+													<th>Mobile</th>
+													<th>Sent SMS</th>
+													<th>Edit</th>
+												</tr>
+											</tfoot>
+										</table>
 									</div>
-									
-									<div class="card-header bg-warning">
-										<h4 class="card-title">Create New Message</h4>
+								</div>
+								
+								<div class="card-header bg-warning">
+									<h4 class="card-title">Create New Message</h4>
+								</div>
+								<div class="card-body">
+									<div class="sms-result"></div>
+									<div class="form-group">
+										<label>Message</label><br>
+										<textarea name="sms" id="sms" placeholder="Write your Message" class="form-control" style="resize: none;"></textarea>
+										<input type="hidden" name="parent_id" id="parent_id" value="<?php echo $_SESSION['parent_id']?>">
+										<input type="hidden" name="branch_id" id="branch_id" value="<?php echo $BRANCHID?>">
 									</div>
-									<div class="card-body">
-										<div class="sms-result"></div>
-										<div class="form-group">
-											<label>Message</label><br>
-											<textarea name="sms" id="sms" placeholder="Write your Message" class="form-control" style="resize: none;"></textarea>
-											<input type="hidden" name="parent_id" id="parent_id" value="<?php echo $_SESSION['parent_id']?>">
-											<input type="hidden" name="branch_id" id="branch_id" value="<?php echo $BRANCHID?>">
-										</div>
-										<button class="btn btn-primary  shadow" type="button" id="sms-btn">Send SMS <i class="fa fa-send" id="fa-sending"></i></button> 
-									</div>
-								</form>
-      						</div>
-      					</div>
-      				</div>
-      			</div>
-      			
-				<!-- Editing Modal -->
-				<div class="modal fade" id="modalEditNumber">
-					<div class="modal-dialog modal-lg">
-						<div class="modal-content bg-secondary">
-							<div class="modal-header">
-								<h4 class="modal-title">Edit Borrower Number</h4>
-								<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-									<span aria-hidden="true">&times;</span>
-								</button>
-							</div>
-							<div class="modal-body">
-
-							</div>
+									<button class="btn btn-primary  shadow" type="button" id="sendbtn">Send SMS <i class="fa fa-send" id="fa-sending"></i></button> 
+								</div>
+							</form>
 						</div>
 					</div>
 				</div>
-      		</section>
-		</div>
-		<aside class="control-sidebar control-sidebar-dark"></aside>
+			</div>
+			
+		</section>
 	</div>
-	<?php include("../footer_links.php")?>
-	<script type="text/javascript" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
-	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
-	<script src="plugins/toastr/toastr.min.js"></script>
+	<?php include("../addon_footer.php")?>
 	<script>
 		$(document).ready( function () {
 		    $('#myTable').DataTable();
@@ -203,7 +156,7 @@
 		});
 
 
-		$("#sms-btn").click(function(){
+		$("#sendbtn").click(function(){
 			if ($(".checkSingle").is(":checked")) {
 				var mobile = $("#mobile").val();
 				var sms = document.getElementById("sms");
@@ -217,7 +170,7 @@
 				let formData = new FormData(myForm);
 
 				$.ajax({
-					url:"SMSFIles/send-sms-to-staff",
+					url:"SMSFIles/sendMessage",
 					method:"post",
 					data:formData,
 					cache:false,

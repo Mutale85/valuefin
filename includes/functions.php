@@ -89,7 +89,6 @@
 	}
 
 	
-
 	function getStaffMemberNames($connect, $user_id, $parent_id) {
 		$query = $connect->prepare("SELECT * FROM admins WHERE id = ? AND parent_id = ? ");
 		$query->execute(array($user_id, $parent_id));
@@ -509,10 +508,10 @@
 		return $output;
 	}
 
-	function getTotalPaidForStatement($connect, $borrower_id, $loan_number, $parent_id){
+	function getTotalPaidForStatement($connect, $borrower_id, $loan_number){
 		$output = '';
-		$sql = $connect->prepare("SELECT *, SUM(amount) AS total_paid FROM `loan_payments` WHERE borrower_id = ? AND loan_number = ? AND parent_id = ? ");
-		$sql->execute(array($borrower_id, $loan_number, $parent_id));
+		$sql = $connect->prepare("SELECT *, SUM(amount) AS total_paid FROM `loan_payments` WHERE borrower_id = ? AND loan_number = ? ");
+		$sql->execute(array($borrower_id, $loan_number));
 		if ($sql->rowCount() > 0) {
 			$rows = $sql->fetch();
 			if ($rows) {
@@ -844,7 +843,12 @@ function getAllowedBranches($connect, $parent_id, $staff_id) {
   	return $output;
 }
 
+//################################################################# NEW FUNCTIONS ########################################################
+/* 
+	The new functions to deal with loan calcultalations, clients details and many more
+*/
 
+//########################################################################################################################################
 function getTotalAmountOwed($connect, $borrower_id, $loan_number){
 	$query = $connect->prepare("SELECT * FROM loans_table WHERE borrower_id = ? AND loan_number = ? AND loan_status = 'Released'  ");
 	$query->execute(array($borrower_id, $loan_number));
@@ -981,6 +985,19 @@ function getNextofKinDetails($connect, $borrower_id){
 	return $output;
 }
 
+function get_gravatar( $email, $s = 80, $d = 'mp', $r = 'g', $img = false, $atts = array() ) {
+	$url = 'https://www.gravatar.com/avatar/';
+	$url .= md5( strtolower( trim( $email ) ) );
+	$url .= "?s=$s&d=$d&r=$r";
+	if ( $img ) {
+		$url = '<img src="' . $url . '"';
+		foreach ( $atts as $key => $val )
+			$url .= ' ' . $key . '="' . $val . '"';
+		$url .= ' />';
+	}
+	return $url;
+}
+
 function getClientsImage($connect, $borrower_id){
 	$output = '';
 	$query = $connect->prepare("SELECT * FROM borrowers_details WHERE borrower_id = ? ");
@@ -989,6 +1006,7 @@ function getClientsImage($connect, $borrower_id){
 	if($row){
 		extract($row);
 		$output = 'borrowers/uploads/'.$borrower_photo;
+		
 	}
 	return $output;
 } 
@@ -1031,7 +1049,7 @@ function SMSNOW($to, $message, $api_key, $sender_id){
 
 function getLoanID($connect, $borrower_id){
 	$output = '';
-	$query = $connect->prepare("SELECT * FROM loan_applications WHERE  applicant_id =  ? AND status = 'approved' AND repayment_status = '0' ");
+	$query = $connect->prepare("SELECT * FROM loan_applications WHERE applicant_id =  ? AND status = 'approved' AND repayment_status = '0' ");
 	$query->execute([ $borrower_id]);
 	$row = $query->fetch();
 	if($row){
@@ -1056,6 +1074,34 @@ function getClientsTotalLoan($connect, $loan_id, $borrower_id){
 	return $output;
 }
 
+function getTotalLoanByLoanId($connect, $loan_id){
+	$output = '';
+	$query = $connect->prepare("SELECT * FROM loan_applications WHERE id = ? AND status = 'approved' ");
+	$query->execute([$loan_id]);
+	$row = $query->fetch();
+	if($row){
+		extract($row);
+		$output = $total_loan_amount;
+	}else{
+		$output = '';
+	}
+	return $output;
+}
+
+function getClientsDailyRate($connect, $borrower_id){
+	$output = '';
+	$query = $connect->prepare("SELECT * FROM loan_applications WHERE applicant_id =  ? AND status = 'approved' AND repayment_status = '0' ");
+	$query->execute([$borrower_id]);
+	$row = $query->fetch();
+	if($row){
+		extract($row);
+		$output = $repayment_amount_daily;
+	}else{
+		$output = '';
+	}
+	return $output;
+}
+
 function getClientsLoanDueDate($connect, $loan_id, $borrower_id){
 	$output = '';
 	$query = $connect->prepare("SELECT * FROM loan_applications WHERE id = ? AND applicant_id =  ? AND status = 'approved' AND repayment_status = '0' ");
@@ -1065,6 +1111,269 @@ function getClientsLoanDueDate($connect, $loan_id, $borrower_id){
 		extract($row);
 		$output = date("l, jS \of F Y ", strtotime($repayment_start_date));
 	}
+	return $output;
+}
+
+function getClientsPaidAmount($connect, $borrower_id, $today){
+	$output = '';
+	$sql = $connect->prepare("SELECT * FROM loan_payments WHERE borrower_id = ? AND paid_date = ? ");
+	$sql->execute([$borrower_id, $today]);
+	$numRows = $sql->rowCount();
+	if($numRows > 0){
+		$row = $sql->fetch();
+		if($row)
+			extract($row);
+			$output = $amount;
+	}else{
+		$output = '0.00';
+	}
+
+	return $output;
+}
+
+function getClientsBalanceAmount($connect, $borrower_id, $today){
+	$output = '';
+	$sql = $connect->prepare("SELECT * FROM loan_payments WHERE borrower_id = ? AND paid_date = ? ");
+	$sql->execute([$borrower_id, $today]);
+	$numRows = $sql->rowCount();
+	if($numRows > 0){
+		$row = $sql->fetch();
+		if($row)
+			extract($row);
+			$output = $balance;
+	}else{
+		$output = '0.00';
+	}
+
+	return $output;
+}
+
+function getBranchPaymentTotal($connect, $branch_id, $parent_id, $today){
+	$output = '';
+	$sql = $connect->prepare("SELECT * FROM loan_payments WHERE branch_id = ? AND parent_id = ? AND paid_date = ? ");
+	$sql->execute([$branch_id, $parent_id, $today]);
+	$numRows = $sql->rowCount();
+	if($numRows > 0){
+		$query = $connect->prepare("SELECT SUM(amount) AS total_collected FROM loan_payments WHERE branch_id = ? AND parent_id = ? AND paid_date = ? AND balance != '0.00' ");
+		$query->execute([$branch_id, $parent_id, $today]);
+		$row = $query->fetch();
+		if($row){
+			$output = $row['total_collected'];
+		}
+	}else{
+		$output = '0.00';
+	}
+
+	return $output;
+}
+
+function getBranchBalanceTotal($connect, $branch_id, $parent_id, $today){
+	$output = '';
+	$sql = $connect->prepare("SELECT * FROM loan_payments WHERE branch_id = ? AND parent_id = ? AND paid_date = ? ");
+	$sql->execute([$branch_id, $parent_id, $today]);
+	$numRows = $sql->rowCount();
+	if($numRows > 0){
+		$query = $connect->prepare("SELECT SUM(balance) AS total_collected FROM loan_payments WHERE branch_id = ? AND parent_id = ? AND paid_date = ? AND balance != '0.00' ");
+		$query->execute([$branch_id, $parent_id, $today]);
+		$row = $query->fetch();
+		if($row){
+			$output = $row['total_collected'];
+		}
+	}else{
+		$output = '0.00';
+	}
+	return $output;
+}
+
+function fetchTotalPaid($connect, $loan_id, $borrower_id){
+	$output = '';
+	$sql = $connect->prepare("SELECT * FROM loan_payments WHERE borrower_id = ? AND loan_number = ? ");
+	$sql->execute([$borrower_id, $loan_id]);
+	$numRows = $sql->rowCount();
+	if($numRows > 0){
+		$query = $connect->prepare("SELECT SUM(amount) AS total_collected FROM loan_payments WHERE borrower_id = ? AND loan_number = ?  ");
+		$query->execute([$borrower_id, $loan_id]);
+		$row = $query->fetch();
+		if($row){
+			$output = $row['total_collected'];
+		}
+	}else{
+		$output = '0.00';
+	}
+	return $output;
+}
+
+function fetTotalCollectedByBranch($connect, $branch_id, $parent_id){
+	$output = '';
+	$sql = $connect->prepare("SELECT * FROM loan_payments WHERE branch_id = ? AND parent_id = ? ");
+	$sql->execute([$branch_id, $parent_id]);
+	$numRows = $sql->rowCount();
+	if($numRows > 0){
+		$query = $connect->prepare("SELECT SUM(amount) AS total_collected FROM loan_payments WHERE branch_id = ? AND parent_id = ? AND balance != '0.00' ");
+		$query->execute([$branch_id, $parent_id]);
+		$row = $query->fetch();
+		if($row){
+			$output = $row['total_collected'];
+		}
+	}else{
+		$output = '0.00';
+	}
+
+	return $output;
+}
+function fetchClientsLoanBalance($connect, $id, $applicant_id){
+	$output = '';
+	
+	$query = $connect->prepare("SELECT * FROM loan_applications WHERE id = ? AND applicant_id = ? AND status = 'approved' AND repayment_status = '0' ");
+	$query->execute([$id, $applicant_id]);
+	if($query->rowCount() > 0){
+		$row = $query->fetch();
+		if($row){
+			$output = $row['loan_balance'];
+		}
+	}else{
+		$output = "N/A";
+	}
+	
+	return $output;
+}
+
+function checkPaymentsMade($connect, $borrower_id, $loan_id){
+	$query1 = $connect->prepare("SELECT * FROM approvedLoans WHERE loan_id = ? AND borrower_id = ? ");
+	$query1->execute([$loan_id, $borrower_id]);
+	$row = $query1->fetch();
+	$today = date("Y-m-d");
+	if($row){
+		$date_approved = date("Y-m-d", strtotime($row['date_approved'])); 
+		$date_ = date("j F, Y", strtotime($row['date_approved']));
+		$days = getDaysBetweenDates($date_approved, $today);
+		$branch_id = $row['branch_id'];
+		$parent_id = $row['parent_id'];
+		
+	}
+	$total_loan = fetchClientsLoanBalance($connect, $loan_id, $borrower_id);
+	$query = $connect->prepare("SELECT * FROM loan_payments WHERE borrower_id = ? AND loan_number = ? AND paid_date BETWEEN DATE_SUB(NOW(), INTERVAL '".$days."' DAY) AND NOW() ");
+	$query->execute([$borrower_id, $loan_id]);
+	$num_payments = $query->rowCount();
+	
+    if ($num_payments > 0) {
+		$rows = $query->fetch();
+		$payday = $rows['paid_date'];
+        echo '	<div class="tooltips"><i class="bi bi-info-circle"></i>
+					<span class="tooltipstext">client has made '.$num_payments .' payments in the last '.$days.' days, last payment being '.$payday.'</span>
+				</div>';
+				checkIfInArrearsAndHasMadePayment($connect, $loan_id, $borrower_id);
+    } else {
+		if($days <= 6){
+			echo '	<div class="tooltips"><i class="bi bi-info-circle"></i>
+					<span class="tooltipstext">client has made '.$num_payments .' payments in the last '.$days.' days</span>
+				</div>';
+		}else{
+			echo "<span class='bg-danger badge'> Over due: ".$days." Days</span>";
+			// Insert client into the db for those in arrears
+			$query = $connect->prepare("SELECT * FROM loan_payment_arrears WHERE loan_id = ? AND borrower_id = ? AND date_submitted > DATE_SUB(NOW(), INTERVAL 24 HOUR) ");
+			$query->execute([$loan_id, $borrower_id]);
+			if($query->rowCount() > 0){
+				//$update
+			}else{
+				$sql = $connect->prepare("INSERT INTO loan_payment_arrears(branch_id, parent_id, loan_id, borrower_id, total_loan, days_missed ) VALUES(?, ?, ?, ?, ?, ?) ");
+				$sql->execute([$branch_id, $parent_id, $loan_id, $borrower_id, $total_loan, $days]);
+			}
+		}
+    }
+	
+}
+
+function checkIfInArrearsAndHasMadePayment($connect, $loan_id, $borrower_id){
+	$query = $connect->prepare("SELECT * FROM loan_payment_arrears WHERE loan_id = ? AND borrower_id = ? ");
+	$query->execute([$loan_id, $borrower_id]);
+	if($query->rowCount() > 0){
+		$update = $connect->prepare("UPDATE loan_payment_arrears SET made_payment = '1' WHERE loan_id = ? AND borrower_id = ? ");
+		$update->execute([$loan_id, $borrower_id]);
+	}
+}
+
+function getDaysBetweenDates($date1, $date2) {
+    $date1 = new DateTime($date1);
+    $date2 = new DateTime($date2);
+    $interval = $date1->diff($date2);
+    return $interval->format('%a');
+}
+
+function getLoanApprovedDays($connect, $loan_id, $borrower_id){
+	$query1 = $connect->prepare("SELECT DATE(date_approved) AS date_approved FROM approvedLoans WHERE loan_id = ? AND borrower_id = ? ");
+	$query1->execute([$loan_id, $borrower_id]);
+	$row = $query1->fetch();
+	$today = date("Y-m-d");
+	if($row){
+		$date_approved = $row['date_approved']; 
+		$date_ = date("j F, Y", strtotime($row['date_approved']));
+		$days = getDaysBetweenDates($date_approved, $today);
+	}
+
+	return $days;
+}
+
+// function to get date when the client paid the loan full
+function getDateLoanFullyPaid($connect, $borrower_id, $loan_number){
+	$output = "";
+	$sql = $connect->prepare("SELECT * FROM `loan_payments` WHERE borrower_id = ? AND loan_number = ? AND balance = '0.00' ");
+	$sql->execute([$borrower_id, $loan_number]);
+	$row = $sql->fetch();
+	if ($row) {
+		extract($row);
+		$output = date("l, jS \of F Y ", strtotime($paid_date));
+	}
+	return $output;
+}
+
+
+function checkifBorrowerAppliedForALoan($connect, $parent_id, $applicant_id){
+	$output = '';
+	
+	$query = $connect->prepare("SELECT * FROM loan_applications WHERE parent_id = ? AND applicant_id = ? AND status = 'approved' AND repayment_status = '0' ");
+	$query->execute([$parent_id, $applicant_id]);
+	if($query->rowCount() > 0){
+		$row = $query->fetch();
+		if($row){
+			$output = '<span class="text-warning"> ZMW '. $row['loan_balance']. ' </span>';
+		}
+	}else{
+		$output = '<span class="text-scondary"> ZMW 0.00</span>';
+	}
+	
+	return $output;
+}
+
+function countNumberofLoanPaymentsToday($connect, $branch_id, $parent_id, $today){
+	$output = '';
+	$query = $connect->prepare("SELECT * FROM loan_payments WHERE branch_id = ? AND parent_id = ? AND paid_date = ? ");
+	$query->execute([$branch_id, $parent_id, $today]);
+	$output = $query->rowCount();
+	return $output;
+}
+
+function countNumberofLoanApplications($connect, $branch_id, $parent_id){
+	$output = '';
+	$query = $connect->prepare("SELECT * FROM loan_applications WHERE branch_id = ? AND parent_id = ? ");
+	$query->execute([$branch_id, $parent_id]);
+	$output = $query->rowCount();
+	return $output;
+}
+
+function countNumberOfClients($connect, $branch_id, $parent_id){
+	$output = '';
+	$query = $connect->prepare("SELECT * FROM borrowers_details WHERE branch_id = ? AND parent_id = ? ");
+	$query->execute([$branch_id, $parent_id]);
+	$output = $query->rowCount();
+	return $output;
+}
+
+function countNumberOfLoansAprovedAndIssued($connect, $branch_id, $parent_id){
+	$output = '';
+	$query = $connect->prepare("SELECT * FROM approvedLoans WHERE branch_id = ? AND parent_id = ? ");
+	$query->execute([$branch_id, $parent_id]);
+	$output = $query->rowCount();
 	return $output;
 }
 ?>

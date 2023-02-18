@@ -121,7 +121,7 @@
 											<div class="input-group mb-3">
 												<span class="input-group-text"><i class="bi bi-calendar"></i></span>
 												<input type="text" name="borrower_dateofbirth" id="borrower_dateofbirth" class="form-control" onchange="calculateAge(this.value)">
-												<input type="text" name="borrower_age" id="borrower_age" class="form-control">
+												<input type="hidden" name="borrower_age" id="borrower_age" class="form-control">
 											</div>
 										</div>
 										<div class="form-groups col-md-6">

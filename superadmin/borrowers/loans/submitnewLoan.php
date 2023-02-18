@@ -2,16 +2,16 @@
 include ("../../../includes/db.php");
 extract($_POST);
 
-$query = $connect->prepare("SELECT * FROM loan_applications WHERE branch_id = ? AND parent_id = ? AND applicant_id = ? AND repayment_status = '0' ");
+$query = $connect->prepare("SELECT * FROM loan_applications WHERE branch_id = ? AND parent_id = ? AND applicant_id = ? AND status = 'pending' AND repayment_status = '0' ");
 $query->execute([$branch_id, $parent_id, $applicant_id]);
 $count = $query->rowCount();
 if ($count > 0) {
-	$row = $query->fetch();
-	extract($row);
-	if($status == 'pending'){
+	// $row = $query->fetch();
+	// extract($row);
+	// if($status == 'pending'){
 		echo getBorrowerFullNamesByCardId($connect, $applicant_id) .' has a pending loan application';
-		exit();
-	}
+	// 	exit();
+	// }
 }else{
 	// insert 
 	$repayment_start_date = date("Y-m-d", strtotime($repayment_start_date));

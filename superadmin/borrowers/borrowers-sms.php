@@ -71,7 +71,7 @@
                                                     <td data-column="Send SMS"><input type="checkbox" name="checked_user[]" class="checkSingle" id="checked_user" value="<?php echo $borrower_phone?>"></td>
                                                     <td data-column="Firstname"><?php echo getBorrowerFullNamesByCardId($connect, $borrower_id) ?></td>
                                                     <td data-column="Mobile"><?php echo $borrower_phone?></td>
-                                                    <td><a href="borrowers/view-sent-sms?phonenumber=<?php echo base64_encode($borrower_phone)?>&username=<?php echo $borrower_firstname ?>"> Sent SMS -  <?php echo countSMS($connect, $borrower_phone, $_SESSION['parent_id'])?> </a></td>
+                                                    <td><a href="SMSFiles/view-sent-sms?phonenumber=<?php echo base64_encode($borrower_phone)?>&username=<?php echo $borrower_firstname ?>"> Sent SMS -  <?php echo countSMS($connect, $borrower_phone, $_SESSION['parent_id'])?> </a></td>
                                                     <td data-column="Edit">
                                                         <a href="borrowers/borrower-details-edit?applicant-id=<?php echo base64_encode($borrower_id)?>"><i class="bi bi-pencil-square" aria-hidden="true"></i></a>
                                                     </td>

@@ -1,7 +1,13 @@
 
+<base href="http://localhost/valuefin.co/superadmin/">
 <?php 
-  	require ("../includes/db.php");
-  	require ("../includes/tip.php"); 
+  	require ("../../includes/db.php");
+	if(!isset($_SESSION['user_role'])){
+        header("location:../signout");
+        // echo "Not logged in";
+    }
+
+	// require ("../addons/tip.php"); 
 	$option = $countries = '';
 	$query = $connect->prepare("SELECT * FROM currencies");
 	$query->execute();
@@ -9,295 +15,135 @@
 		$option .= '<option value="'.$row['code'].'">'.$row['code'].'</option>';
 		$countries .= '<option value="'.$row['id'].'">'.$row['country'].'</option>';
 	}
-	$branch_unique_id = "";
-	$sql = $connect->prepare("SELECT branch_unique_id FROM branches ORDER BY id DESC ");
-	$sql->execute(array($_SESSION['parent_id']));
-	if ($sql->rowCount() > 0) {
-		$row = $sql->fetch();
-		if ($row) {
-			$branch_unique_id = $row['branch_unique_id']+1;
-		}
-	}else{
-		$branch_unique_id = 1000;
-	}
+	
 	
 ?>
 <!DOCTYPE html>
 <html>
 <head>
 	<title>Branches</title>
-	<?php include("../links.php") ?>
-	<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
-	<link href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css" rel="stylesheet" type="text/css" />
-	<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" rel="stylesheet" type="text/css" />
-	<link rel="stylesheet" href="plugins/toastr/toastr.min.css">
-	<link rel="stylesheet" href="plugins/select2/css/select2.min.css">
-	<style>
-		
-		.cursor-pointer {
-			cursor: pointer;
-			font-size: 1em;
-		}
-		.select2-container--default.select2-container--focus .select2-selection--multiple, .select2-container--default.select2-container--focus .select2-selection--single {
-		    border-color: #ff80ac;
-		    height: 35px !important;
-		}
-
-		.select2-container--default .select2-selection--multiple .select2-selection__rendered li:first-child.select2-search.select2-search--inline {
-		    width: 100%;
-		    margin-left: .375rem;
-		    height: 35px;
-		}
-		.select2-container--default .select2-selection--single {
-		    background-color: #f8f9fa;
-		    border: 1px solid #aaa;
-		    border-radius: 4px;
-		    height: 35px;
-		}
-		.select2-container--default .select2-selection--multiple .select2-selection__rendered {
-		    box-sizing: border-box;
-		    list-style: none;
-		    margin: 0;
-		    padding: .4em;
-		    width: 100%;
-		}
-		img.img-rounded {
-			border-radius: 50%;
-		}
-		/*phone*/
-		.select-style {
-		    width: 70px;
-		    padding: 0;
-		    margin: 0;
-		    display: inline-block;
-		    vertical-align: middle;
-		    background: url("http://grumbletum.com/places/arrowdown.gif") no-repeat 100% 30%;
-		}
-		.select-style select {
-		    width: 100%;
-		    padding: 0;
-		    margin: 0;
-		    background-color: transparent;
-		    background-image: none;
-		    border: none;
-		    box-shadow: none;
-		    -webkit-appearance: none;
-		       -moz-appearance: none; // FF have a bug
-		            appearance: none;
-		}
-		.iti { width: 100%; }
-		.intl-tel-input {
-		  background-color: black;
-		}
-		.intl-tel-input .selected-flag {
-		  	z-index: 4;
-		  	background-color: black;
-		}
-		.iti__selected-dial-code {
-			color: red;
-		}
-		.intl-tel-input .country-list {
-		  	z-index: 5;
-		  	background-color: black;
-		}
-		.input-group .intl-tel-input .form-control {
-			border-top-left-radius: 4px;
-			border-top-right-radius: 0;
-			border-bottom-left-radius: 4px;
-			border-bottom-right-radius: 0;
-		}
-	</style>
+	<?php include("../addon_header.php");?>
 </head>
-<?php
-	
-?>
 <body class="hold-transition sidebar-mini layout-fixed">
-	<div class="wrapper">
-		<?php include ("../nav_side.php"); ?>
-		<div class="content-wrapper">
-			<section class="content mt-5">
-      			<div class="container-fluid mt-5 mb-5">
-      				<div class="row mt-5">
-      					<div class="col-md-12 mt-4 pb-2 d-flex justify-content-between">
-  							
-  						</div>
-      				</div>
-      			</div>
-      			<?php if($_SESSION['user_role'] == 'Admin'):?>
-  								
-  				<?php endif;?>	
-      			<div class="container">
-      				<div class="row">
-      					<div class="col-md-12">
-      						<div class="card card-warning card-outline mb-5">
-      							<div class="card-body box-profile">
-      								<a href="members/branches#branchForm" class="btn btn-outline-warning mb-3" type="button" ><i class="bi bi-plus-circle"></i> Add Branch</a>
-      								<div class="table table-responsive mb-5 mt-5">
-										<table id="branchesTable" class="cell-border" style="width:100%">
-									        <thead>
-									            <tr>
-									            	<th>Branch Name</th>
-									                <th>Location</th>
-									                <th>Landline</th>
-									                <th>Mobile</th>
-									                
-									               <?php if($_SESSION['user_role'] == 'Admin'):?> 
-									                	<th>Actions</th>
-									            	<?php endif;?>
-									            </tr>
-									        </thead>
-									        <tbody id="fetchBranches" class="text-dark">
+	<?php include("../addon_top_min_nav.php")?>
+  	<?php include("../addon_side_nav.php")?>
+	<div class="content-wrapper">
+		<?php include("../addon_content_header.php")?>
+        <section class="content bg-light">
+			<div class="container">
+				<div class="row">
+					<div class="col-md-12">
+						<div class="card card-warning card-outline mb-5">
+							<div class="card-body box-profile">
+								<a href="members/branches#branchForm" class="btn btn-outline-warning mb-3" type="button" ><i class="bi bi-plus-circle"></i> Add Branch</a>
+								<div class="table table-responsive mb-5 mt-5">
+									<table id="branchesTable" class="cell-border" style="width:100%">
+										<thead>
+											<tr>
+												<th>Branch Name</th>
+												<th>Location</th>
+												<th>Phone</th>
+												<th>Clicks</th>
+												<th>Actions</th>
+											</tr>
+										</thead>
+										<tbody id="fetchBranches" class="text-dark">
 
-									        </tbody>
-									    </table>
-									</div>
+										</tbody>
+									</table>
 								</div>
 							</div>
 						</div>
 					</div>
 				</div>
-				<div class="container">
-					<div class="row">
-						<div class="col-md-12">
-							<div class="card card-primary">
-								<div class="card-header">
-									<h4 class="card-title">Add Branches</h4>
-								</div>
-								<form method="post" id="branchForm">
-									<div class="card-body">
-	  									<div class="row">
-	      									<div class="form-group col-md-6 mb-3">
-	      										<label>Branch name</label>
-	      										<input type="text" name="branch_name" id="branch_name" class="form-control">
-	      										<input type="hidden" name="parent_id" id="parent_id" value="<?php echo $_SESSION['parent_id']?>">
-	      										<input type="hidden" name="branch_id" id="branch_id">
-	      									</div>
-	      									
-	      									<input type="hidden" name="branch_unique_id" id="branch_unique_id" class="form-control" value="<?php echo $branch_unique_id?>" readonly>
-	      									<div class="form-group col-md-6 mb-3">
-	      										<label>Open Date</label>
-	      										<input type="text" name="open_date" id="open_date" class="form-control">
-	      									</div>
-	      									<div class="form-group col-md-6 mb-3">
-	      										<label>Branch Address</label>
-	      										<input type="text" name="address" id="address" class="form-control">
-	      									</div>
-	      									<div class="form-group col-md-6 mb-3">
-	      										<label>Branch City</label>
-	      										<input type="text" name="city" id="city" class="form-control" placeholder="City">
-	      									</div>
-	      									<div class="form-group col-md-6 mb-3">
-												<label>Country</label>
-												<div class="">
-													<select class="select2"  name="country" id="country" data-placeholder="Select Borrowers" data-dropdown-css-class="select2-purple" style="width: 100%;">
-														<?php echo $countries;?>
-													</select>
-												</div>
-											</div>
-	      									<div class="form-group col-md-6 mb-3">
-	      										<label>Branch landline</label>
-	      										<input type="text" name="phone_landline" id="phone_landline" class="form-control" placeholder="Landine number">
-	      									</div>
-	      									<div class="form-group col-md-6 mb-3">
-	      										<label>Branch Mobile</label>
-	      										<input type="tel" id="phone" name="phone" class="form-control" onkeyup="complePhone(this.value)">
-	      										<input type="hidden" name="phone_mobile" id="phone_mobile" class="form-control">
-	      										<p id="result"></p>
-	      									</div>
-
-	      									<div class="form-group col-md-6 mb-3">
-												<label>Currency</label>
-												<div class="">
-													<select class="select2"  name="currency" id="currency" data-placeholder="Select Borrowers" data-dropdown-css-class="select2-purple" style="width: 100%;">
-														<?php echo $option;?>
-													</select>
-												</div>
-											</div>
-	      								</div>
-	      							</div>
-	      							<div class="card-footer justify-content-between">
-										<button class="btn btn-secondary" type="submit" id="branchBtn" onclick="adBranch(event)">Submit</button>
-										<button class="btn btn-secondary" type="submit" id="updatebranchBtn" onclick="updateBranch(event)" style="display: none;">Update</button>
-									</div>
-  								</form>
+			</div>
+			<div class="container">
+				<div class="row">
+					<div class="col-md-12">
+						<div class="card card-primary">
+							<div class="card-header">
+								<h4 class="card-title">Add Branches</h4>
 							</div>
+							<form method="post" id="branchForm">
+								<div class="card-body">
+									<div class="row">
+										<div class="form-group col-md-6 mb-3">
+											<label>Branch name</label>
+											<input type="text" name="branch_name" id="branch_name" class="form-control">
+											<input type="hidden" name="parent_id" id="parent_id" value="<?php echo $_SESSION['parent_id']?>">
+											<input type="hidden" name="branch_id" id="branch_id">
+										</div>
+										
+										<div class="form-group col-md-6 mb-3">
+											<label>Open Date</label>
+											<input type="text" name="open_date" id="open_date" class="form-control">
+										</div>
+										<div class="form-group col-md-6 mb-3">
+											<label>Branch Address</label>
+											<input type="text" name="address" id="address" class="form-control">
+										</div>
+										<div class="form-group col-md-6 mb-3">
+											<label>Branch City</label>
+											<input type="text" name="city" id="city" class="form-control" placeholder="City">
+										</div>
+										<div class="form-group col-md-6 mb-3">
+											<label>Country</label>
+											<div class="">
+												<select class="form-control"  name="country" id="country" >
+													<?php echo $countries;?>
+												</select>
+											</div>
+										</div>
+										
+										<div class="form-group col-md-6 mb-3">
+											<label>Branch Mobile</label>
+											<input type="tel" id="phone" name="phone" class="form-control" onkeyup="complePhone(this.value)">
+											<input type="hidden" name="phone_mobile" id="phone_mobile" class="form-control">
+											<p id="result"></p>
+										</div>
+
+						
+									</div>
+								</div>
+								<div class="card-footer justify-content-between">
+									<button class="btn btn-secondary" type="submit" id="branchBtn" onclick="adBranch(event)">Submit</button>
+									<button class="btn btn-secondary" type="submit" id="updatebranchBtn" onclick="updateBranch(event)" style="display: none;">Update</button>
+								</div>
+							</form>
 						</div>
 					</div>
 				</div>
-      		</section>
-		</div>
-		<aside class="control-sidebar control-sidebar-dark"></aside>
+			</div>
+		</section>
 	</div>
-	<?php include("../footer_links.php")?>
-	<script type="text/javascript" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
-	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
-	<script src="plugins/select2/js/select2.full.min.js"></script>
-	<script src="plugins/toastr/toastr.min.js"></script>
+	<?php include("../addon_footer.php")?>
 	<script>
 		$(document).ready( function () {
 		    $('#adminsTable').DataTable();
 		    $("#branchesTable").DataTable();
-		    // select
-		    $('.select2').select2();
-		    //datepicker
+		    
 		    $("#open_date").datepicker({
 
 				format: 'yyyy-mm-dd',
 				autoclose:true,
 			});
-
-			$(".listView").click(function(e){
-				e.preventDefault();
-				$(".gridViewDiv").hide();
-				$(".listViewDiv").show();
-			})
-
-			$(".gridView").click(function(e){
-				e.preventDefault();
-				$(".gridViewDiv").show();
-				$(".listViewDiv").hide();
-			})
 		});
 
-	// ================================= DISPLAYS ======================================
-		function successNow(msg){
-			toastr.success(msg);
-	      	toastr.options.progressBar = true;
-	      	toastr.options.positionClass = "toast-top-center";
-	      	toastr.options.showDuration = 1000;
-	    }
-
-		function errorNow(msg){
-			toastr.error(msg);
-	      	toastr.options.progressBar = true;
-	      	toastr.options.positionClass = "toast-top-center";
-	      	toastr.options.showDuration = 1000;
-	    }
+	
 	
 	//========================================= ADDING BRANCHES ==================================
 	adBranch = function(){
 	event.preventDefault();
 		var xhr = new XMLHttpRequest();
-		var url = 'members/addBranch';
+		var url = 'members/parsers/submitNewBranch';
 		var branchForm = document.getElementById('branchForm');
 		xhr.open("POST", url, true);
 		var branch_name = document.getElementById('branch_name').value;
 		var data = new FormData(branchForm);
 		xhr.onreadystatechange = function(){
 			if (xhr.readyState == 4 && xhr.status == 200) {
-				if (xhr.responseText === 'done') {
-					successNow(branch_name + ' added to the database');
-					setTimeout(function(){
-						location.reload();
-					}, 2000);
-					
-				}else{
-					// alert(xhr.responseText);
-					errorNow(xhr.responseText);
-					// $("#groupBorrowerForm")[0].reset();
-					document.getElementById("branchBtn").innerHTML = 'Submit';
-					return false;
-				}
+				var result = xhr.responseText;
+				successNow(result);
 				
 			}
 		}
@@ -308,24 +154,8 @@
 
 	//================================================= LOCALSTORAGE ==========================================
 	var input = document.getElementById('currency');
-	input.onchange = function () {
-		localStorage['currency'] = this.value;
-		// alert(this.value);
-	}
-	document.addEventListener('DOMContentLoaded', function () {
-	 	var input = document.getElementById('currency');
-	 	if (localStorage['currency']) { 
-	     	input.value = localStorage['currency'];
-	 	}
-	 	input.onchange = function () {
-	      	localStorage['currency'] = this.value;
-	  	}
-	});
-
-	var country_input = document.getElementById('country');
-	country_input.onchange = function () {
-		localStorage['country'] = this.value;
-	}
+	
+	
 	document.addEventListener('DOMContentLoaded', function () {
 	 	var country_input = document.getElementById('country');
 	 	if (localStorage['country']) { 
@@ -335,14 +165,12 @@
 	      	localStorage['country'] = this.value;
 	  	}
 	});
-
 	
 	// ================================================================== DISPLAY BRANCHES ===========================
 
 	function manageBranches(){
 		var xhr = new XMLHttpRequest();
-		var url = 'members/fetchBranches';
-		
+		var url = 'members/parsers/fetchBranches';
 		xhr.open("POST", url, true);
 		var branch_name = document.getElementById('branch_name').value;
 		var data = 'member_id=<?php echo $_SESSION['parent_id']?>';
@@ -354,6 +182,7 @@
 		}
 		xhr.send(data);
 	}
+
 	manageBranches();
 
 	$(document).on("click", ".editBranch", function(e){
@@ -361,7 +190,7 @@
 		var branch_id = $(this).data("id");
 		$("#modalBranches").modal("show");
 		$.ajax({
-			url:"members/edit",
+			url:"members/parsers/edit",
 			method:"post",
 			data:{branch_id:branch_id},
 			dataType:"JSON",
@@ -373,12 +202,8 @@
 				$("#open_date").val(data.open_date);
 				$("#address").val(data.address);
 				$("#city").val(data.city);
-				$("#phone_landline").val(data.phone_landline);
+				$("#country").val(data.country);
 				$("#phone_mobile").val(data.phone_mobile);
-				$("#min_amount").val(data.min_amount);
-				$("#max_amount").val(data.max_amount);
-				$("#min_interest").val(data.min_interest);
-				$("#max_interest").val(data.max_interest);
 				$("#branch_id").val(data.id);
 				$("#updatebranchBtn").show();
 				$("#branchBtn").hide();
@@ -392,7 +217,7 @@
 			var delete_branch_id = $(this).data("id");
 			if (confirm("This will delete everything associated with the branch")) {
 				$.ajax({
-					url:"members/edit",
+					url:"members/parsers/edit",
 					method:"post",
 					data:{delete_branch_id:delete_branch_id},
 					beforeSend:function(){
@@ -419,7 +244,7 @@
 		updateBranch = function(){
 			event.preventDefault();
 			var xhr = new XMLHttpRequest();
-			var url = 'members/updateBranch';
+			var url = 'members/parsers/updateBranch';
 			var branchForm = document.getElementById('branchForm');
 			xhr.open("POST", url, true);
 			var branch_name = document.getElementById('branch_name').value;
@@ -469,7 +294,7 @@
 	        placeholderNumberType: "MOBILE",
 	        preferredCountries: ['zm'],
 	        separateDialCode: true,
-	        utilsScript: "intl.17/build/js/utils.js",
+	        utilsScript: "../intl.17/build/js/utils.js",
 	    });
 
 	    function complePhone(phone){

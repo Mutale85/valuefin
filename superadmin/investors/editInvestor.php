@@ -1,5 +1,5 @@
 <?php
-	include '../includes/db.php';
+	include '../../includes/db.php';
 	
 	extract($_POST);
 	if (!empty($investor_id)) {

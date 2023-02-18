@@ -5,4 +5,7 @@ Create customer profile, and loan application Details
 
 loan collection 
 --- check NRC in the loan_application and whose status is approved and repayment_status is 0. 
---- repayment status will become 1, when the total_loan_amount equates the sum(amounts) in the loan_payments table for that particular loan. 
+--- repayment status will become 1, when the total_loan_amount equates the sum(amounts) in the loan_payments table for that particular loan.
+
+Daily Collections
+-- 

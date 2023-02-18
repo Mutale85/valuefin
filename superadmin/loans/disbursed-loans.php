@@ -7,6 +7,13 @@
 <head>
 	<title>Disbursed Amounts</title>
 	<?php include("../addon_header.php");?>
+	<?php
+		$from_period = $to_period = "";
+		if (isset($_GET['from_period']) AND isset($_GET['to_period'])) {
+			$from_period = $_GET['from_period'];
+			$to_period = $_GET['to_period'];
+		}
+	?>
 </head>
 
 <body class="hold-transition sidebar-mini layout-fixed">
@@ -21,7 +28,11 @@
 						<div class="bg-light p-1">
 							<div class="card card-primary card-outline">
 								<div class="card-header">
-									<h4  class="card-title">Search by Dates</h4>
+									<h4  class="card-title">Search by Dates
+										<?php if (isset($_GET['from_period']) AND isset($_GET['to_period'])):?> 
+											<?php echo ': '. date('j F, Y', strtotime($from_period)) . ' - '. date('j F, Y', strtotime($to_period))?>
+										<?php endif;?> 
+									</h4>
 									<div class="card-tools">
 										<button type="button" class="btn btn-tool" data-card-widget="collapse">
 											<i class="fas fa-minus"></i>
@@ -29,13 +40,7 @@
 									</div>
 								</div>
 								<div class="card-body box-profile">
-									<?php
-										$from_period = $to_period = "";
-										if (isset($_GET['from_period']) AND isset($_GET['to_period'])) {
-											$from_period = $_GET['from_period'];
-											$to_period = $_GET['to_period'];
-										}
-									?>
+									
 									<form method="get" id="searchForm">
 										<div class="form-group">
 											<label>From</label>
@@ -106,7 +111,7 @@
 														$month = date("F", strtotime($date_approved));
 													?>
 														<tr>
-															<td><a href="borrowers/loan-request?client-id=<?php echo base64_encode($borrower_id)?>&application_id=<?php echo base64_encode($loan_id)?>"><?php echo getBorrowerFullNamesByCardId($connect, $borrower_id) ?></a></td>
+															<td><a href="borrowers/loan-request?client-id=<?php echo base64_encode($borrower_id)?>&application_id=<?php echo base64_encode($loan_id)?>"><i class="bi bi-person-badge"></i> <?php echo getBorrowerFullNamesByCardId($connect, $borrower_id) ?></a></td>
 															<td><a href="loans/see-loan-details?loan-id=<?php echo base64_encode($loan_id)?>&borrower_id=<?php echo base64_encode($borrower_id) ?>">View details</a></td>
 															<td><?php echo $currency ?> <?php echo $amount?></td>
 															<td><?php echo date("l, jS \of F Y ", strtotime($date_approved))?></td>

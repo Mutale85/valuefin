@@ -1,34 +1,34 @@
 <?php
-	include '../includes/db.php';
+	include '../../includes/db.php';
 	extract($_POST);
 	if (!empty($id)) {
 		# update
 		if ($_FILES['photo']['name']) {
 			$photo 	= $_FILES['photo']['name'];
 			$filename = $_FILES['photo']['tmp_name'];
-			$destination = 'investorsfiles/'.basename($photo);
+			$destination = 'uploads/'.basename($photo);
 			move_uploaded_file($filename, $destination);
 		}else{
 			$photo = $edit_photo;
 
 		}
-		$borrower_phone = preg_replace("#[^0-9]#", "", $borrower_phone);
-		$update = $connect->prepare("UPDATE `investors` SET  `photo` = ?, `title` = ?, `firstname` = ?, `lastname` = ?, `working_status` = ?, `id_type` = ?, `id_number` = ?, `gender` = ?, `investor_country` = ?, `email` = ?, `phone` = ?, `address` = ? WHERE id = ? ");
-		$ex = $update->execute(array($photo, $title, $firstname, $lastname, $working_status, $id_type, $id_number, $gender, $investor_country, $email, $borrower_phone, $address, $id));
+		$phonenumber = preg_replace("#[^0-9+]#", "", $phonenumber);
+		$update = $connect->prepare("UPDATE `investors` SET  `photo` = ?, `title` = ?, `firstname` = ?, `lastname` = ?, `id_type` = ?, `id_number` = ?, `gender` = ?, `investor_country` = ?, `email` = ?, `phone` = ?, `address` = ?, `amount` = ?, `equity` = ? WHERE id = ? ");
+		$ex = $update->execute(array($photo, $title, $firstname, $lastname, $id_type, $id_number, $gender, $investor_country, $email, $phonenumber, $address, $amount, $equity, $id));
 		if ($ex) {
-			echo "update";
+			echo "Investors's data updated";
 		}
 	}else{
 		$photo 	= $_FILES['photo']['name'];
 		$filename = $_FILES['photo']['tmp_name'];
-		$destination = 'investorsfiles/'.basename($photo);
+		$destination = 'uploads/'.basename($photo);
 		move_uploaded_file($filename, $destination);
-		$borrower_phone = preg_replace("#[^0-9]#", "", $borrower_phone);
-		$sql = $connect->prepare("INSERT INTO `investors`(`photo`, `parent_id`, `title`, `firstname`, `lastname`, `working_status`, `id_type`, `id_number`, `gender`, `investor_country`, `email`, `phone`, `address`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ");
-		$ex = $sql->execute(array($photo, $parent_id, $title, $firstname, $lastname, $working_status, $id_type, $id_number, $gender, $investor_country, $email, $borrower_phone, $address));
+		$phonenumber = preg_replace("#[^0-9+]#", "", $phonenumber);
+		$sql = $connect->prepare("INSERT INTO `investors`(`photo`, `parent_id`, `title`, `firstname`, `lastname`, `id_type`, `id_number`, `gender`, `investor_country`, `email`, `phone`, `address`, `amount`, `equity`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ");
+		$ex = $sql->execute(array($photo, $parent_id, $title, $firstname, $lastname, $id_type, $id_number, $gender, $investor_country, $email, $phonenumber, $address, $amount, $equity));
 
 		if ($ex) {
-			echo "done";
+			echo "Investor Added";
 		}
 	}
 ?>

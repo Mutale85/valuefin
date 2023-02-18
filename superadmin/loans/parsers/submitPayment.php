@@ -9,16 +9,20 @@
         $sql = $connect->prepare("INSERT INTO `loan_payments`(`borrower_id`, `branch_id`, `parent_id`, `loan_number`, `currency`, `amount`, `balance`, `paid_date`, `payment_method`, `collected_by`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ? )");
         $sql->execute([$borrower_id, $branch_id, $parent_id, trim($loan_id), $currency, $amount, $balance, $paid_date, $payment_method, $collected_by]);
 
+        $update = $connect->prepare("UPDATE loan_applications SET loan_balance = loan_balance - ? WHERE id = ? AND applicant_id = ? ");
+        $update->execute([$amount, $loan_id, $borrower_id]);
         
         //send an SMS
         $to = getClientsPhone($connect, $borrower_id);
         // $to = '+260976330092';
         $api_key = API;
         $sender_id = SENDER;
-        
+        // create a way to add multiple payments pay day
         if($balance == 0){
             $message = 'Thank you so much. Your Valuefin loan is fully paid. You are eligible for another one';
             echo getBorrowerFullNamesByCardId($connect, $borrower_id) ." has paid off the whole loan";
+            $update = $connect->prepare("UPDATE loan_applications SET repayment_status = '1' WHERE id = ? AND applicant_id = ? ");
+            $update->execute([$loan_id, $borrower_id]);
         }else{
             $message = 'You have made a loan payment to ValueFin -  Balance: '. $currency. ' '. $balance;
             echo getBorrowerFullNamesByCardId($connect, $borrower_id) ." has made a partial payment on the loan ";

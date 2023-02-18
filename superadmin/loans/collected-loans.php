@@ -6,7 +6,20 @@
 <html>
 <head>
 	<title>Collected Loans Amounts</title>
-	<?php include("../addon_header.php");?>
+	<?php 
+		include("../addon_header.php");
+		if(isset($_GET['branch_id'])){
+			$get_branch = base64_decode($_GET['branch_id']);
+			$parent_id = $_SESSION['parent_id'];
+			$branch = getBranchName($connect, $parent_id, $get_branch);
+			
+		}
+
+		if(isset($_GET['allbranches'])){
+			$parent_id = base64_decode($_GET['parent_id']);
+			$branch = 'All Branches';
+		}
+	?>
 </head>
 
 <body class="hold-transition sidebar-mini layout-fixed">
@@ -20,7 +33,19 @@
 					<div class="col-md-12 mb-4">
 						<button class="btn btn-secondary callForm shadow" type="button" >Add New Collection</button>
 					</div>
-					<div class="col-md-12">
+					<div class="col-md-6">
+						<div class="bg-light p-1">
+							<div class="card card-primary card-outline">
+								<div class="card-header">
+									<h4 class="card-title">All Collected by Days</h4>
+								</div>
+								<div class="card-body">
+									<div id="chart"></div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-6">
 						<div class="bg-light p-1">
 							<div class="card card-primary card-outline">
 								<div class="card-header">
@@ -68,86 +93,201 @@
 					<div class="col-md-12"> 						
 						<div class="card card-success mb-5">
 							<div class="card-header">
-								<h4 class="card-title">Collected Loans</h4>
+								<h4  class="card-title">Collected Loans - <?php echo $branch?></h4>
 								<div class="card-tools">
-									<button type="button" class="btn btn-tool" data-card-widget="collapse">
-										<i class="fas fa-minus"></i>
-									</button>
-								</div>
-							</div>
-							<div class="card-body box-profile">
-								<div class="table table-responsive">
-									<table id="collectedLoans" class="cell-border text-dark" style="width:100%">
-										<thead>
-											<tr>
-												<th>Client</th>
-												<th>Paid</th>
-												<th>Balance</th>
-												<th>Date </th>
-												<th>Details</th>
-											</tr>
-										</thead>
-										<tbody>
-											<?php
-												$currency = 'ZMW';
-												$parent_id = $_SESSION['parent_id'];
-												if (isset($_GET['from_period']) AND isset($_GET['to_period'])) {
-													$query = $connect->prepare("SELECT * FROM loan_payments WHERE paid_date BETWEEN ? AND ? AND branch_id = ? AND parent_id = ? ");
-													$query->execute(array($_GET['from_period'], $_GET['to_period'], $BRANCHID, $parent_id));
-													$query2 = $connect->prepare("SELECT SUM(amount) AS total_amount FROM loan_payments WHERE paid_date BETWEEN ? AND ? AND branch_id = ? AND parent_id = ? ");
-													$query2->execute(array($_GET['from_period'], $_GET['to_period'], $BRANCHID, $parent_id));
-													$rows = $query2->fetch();
-													$total_amount = $rows['total_amount'];
-
-												}else{
-													$query = $connect->prepare("SELECT * FROM loan_payments WHERE branch_id = ? AND parent_id = ? ");
-													$query->execute(array($BRANCHID, $parent_id));
-
-													$query2 = $connect->prepare("SELECT *, SUM(amount) AS total_amount FROM loan_payments WHERE branch_id = ? AND parent_id = ? ");
-													$query2->execute(array($BRANCHID, $parent_id));
-													$rows = $query2->fetch();
-													$total_amount = $rows['total_amount'];
-												}
-												
-												$numRows = $query->rowCount();
-												$i = 1;
-												if ($numRows > 0 ) {
-													
-													$i = 1;
-													foreach ($query->fetchAll() as $row) {
-														extract($row);
-														$month = date('F', strtotime($paid_date))
-													?>
-														<tr>
-															<td><a href="borrowers/loan-request?client-id=<?php echo base64_encode($borrower_id)?>&application_id=<?php echo base64_encode($loan_number)?>"><?php echo getBorrowerFullNamesByCardId($connect, $borrower_id) ?></a></td>
-															<td><?php echo $currency ?> <?php echo $amount?></td>
-															<td><?php echo $currency ?> <?php echo $balance ?></td>
-															<td><?php echo date("l, jS \of F Y ", strtotime($paid_date))?></td>
-															<td><a href="loans/see-loan-details?loan-id=<?php echo base64_encode($loan_number)?>&borrower_id=<?php echo base64_encode($borrower_id) ?>">View details</a></td>
-														</tr>
-												<?php
-													}
-												}
+									<div class="btn-group">
+										<button type="button" class="btn btn-light dropdown-toggle" data-toggle="dropdown">
+											<b><i class="bi bi-building-check"></i> Branches</b>
+										</button>
+										<div class="dropdown-menu dropdown-menu-right" role="menu">
+											<?php 
+												$query = $connect->prepare("SELECT * FROM branches WHERE member_id = ?");
+												$query->execute([$parent_id]);
+												foreach($query->fetchAll() as $row){
+													extract($row);
 											?>
-										</tbody>
-										<tfoot>
-											<tr>
-												<th>Total</th>
-												<td><?php echo $currency?> <?php echo $total_amount?></td>
-												<td></td>
-												<td>
-													<?php if(isset($_GET['from_period']) AND isset($_GET['to_period'])):?>
-														<?php echo date("j F, Y", strtotime($from_period)) .' - '. date("j F, Y", strtotime($to_period))?>
-													<?php else: ?>
-														All Period
-													<?php endif;?>	
-												</td>
-												<td></td>
-											</tr>
-										</tfoot>
-									</table>
+												<a href="loans/collected-loans?branch_id=<?php echo base64_encode($id)?>&parent_id=<?php echo base64_encode($member_id)?>" class="dropdown-item text-dark"><?php echo getBranchName($connect, $parent_id, $id);?></a>
+											<?php }?>
+												<a class="dropdown-divider"></a>
+												<a href="loans/collected-loans?allbranches=ALL&parent_id=<?php echo base64_encode($member_id)?>" class="dropdown-item text-dark">All branches data</a>
+										</div>
+									</div>
 								</div>
 							</div>
+							<?php if(isset($_GET['branch_id'])){	?>
+								<div class="card-body box-profile">
+									<div class="table table-responsive">
+										<table id="allTables" class="table table-bordered text-dark" style="width:100%">
+											<thead>
+												<tr>
+													<th>Client</th>
+													<th>Paid</th>
+													<th>Balance</th>
+													<th>Date </th>
+													<th>Details</th>
+												</tr>
+											</thead>
+											<tbody>
+												<?php
+													$currency = 'ZMW';
+													$parent_id = $_SESSION['parent_id'];
+													if (isset($_GET['from_period']) AND isset($_GET['to_period'])) {
+														$query = $connect->prepare("SELECT * FROM loan_payments WHERE paid_date BETWEEN ? AND ? AND branch_id = ? AND parent_id = ? ");
+														$query->execute(array($_GET['from_period'], $_GET['to_period'], $get_branch, $parent_id));
+														$query2 = $connect->prepare("SELECT SUM(amount) AS total_amount FROM loan_payments WHERE paid_date BETWEEN ? AND ? AND branch_id = ? AND parent_id = ? ");
+														$query2->execute(array($_GET['from_period'], $_GET['to_period'], $get_branch, $parent_id));
+														$rows = $query2->fetch();
+														$total_amount = $rows['total_amount'];
+
+													}else{
+														$query = $connect->prepare("SELECT * FROM loan_payments WHERE branch_id = ? AND parent_id = ? ");
+														$query->execute(array($get_branch, $parent_id));
+
+														$query2 = $connect->prepare("SELECT *, SUM(amount) AS total_amount FROM loan_payments WHERE branch_id = ? AND parent_id = ? ");
+														$query2->execute(array($get_branch, $parent_id));
+														$rows = $query2->fetch();
+														$total_amount = $rows['total_amount'];
+													}
+													
+													$numRows = $query->rowCount();
+													$i = 1;
+													if ($numRows > 0 ) {
+														
+														$i = 1;
+														foreach ($query->fetchAll() as $row) {
+															extract($row);
+															$month = date('F', strtotime($paid_date))
+														?>
+															<tr>
+																<td><a href="borrowers/loan-request?client-id=<?php echo base64_encode($borrower_id)?>&application_id=<?php echo base64_encode($loan_number)?>"><i class="bi bi-person-badge"></i> <?php echo getBorrowerFullNamesByCardId($connect, $borrower_id) ?></a></td>
+																<td><?php echo $currency ?> <?php echo $amount?></td>
+																<td><?php echo $currency ?> <?php echo $balance ?></td>
+																<td><?php echo date("l, jS \of F Y ", strtotime($paid_date))?></td>
+																<td><a href="loans/see-loan-details?loan-id=<?php echo base64_encode($loan_number)?>&borrower_id=<?php echo base64_encode($borrower_id) ?>"><i class="bi bi-wallet2"></i> View Loan details</a></td>
+															</tr>
+													<?php
+														}
+													}
+												?>
+											</tbody>
+											<tfoot>
+												<tr>
+													<th>Total</th>
+													<td><?php echo $currency?> <?php echo $total_amount?></td>
+													<td></td>
+													<td>
+														<?php if(isset($_GET['from_period']) AND isset($_GET['to_period'])):?>
+															<?php echo date("j F, Y", strtotime($from_period)) .' - '. date("j F, Y", strtotime($to_period))?>
+														<?php else: ?>
+															All Period
+														<?php endif;?>	
+													</td>
+													<td></td>
+												</tr>
+											</tfoot>
+										</table>
+										<?php 
+											$query = $connect->prepare("SELECT DATE(paid_date) AS date_collected, SUM(amount) AS total_collected FROM loan_payments WHERE branch_id = ? AND parent_id = ? GROUP BY DATE(paid_date) ");
+											$query->execute([$get_branch, $parent_id]);
+											$data = [];
+											while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
+												$data[] = [
+													'x' => $row['date_collected'],
+													'y' => $row['total_collected']
+												];
+											}
+											$data_json = json_encode($data);
+										?>
+									</div>
+								</div>
+							<?php }elseif(isset($_GET['allbranches'])){	?>
+								<div class="card-body box-profile">
+									<div class="table table-responsive">
+										<table id="allTables" class="table table-bordered text-dark" style="width:100%">
+											<thead>
+												<tr>
+													<th>Client</th>
+													<th>Paid</th>
+													<th>Balance</th>
+													<th>Date </th>
+													<th>Details</th>
+												</tr>
+											</thead>
+											<tbody>
+												<?php
+													$currency = 'ZMW';
+													$parent_id = $_SESSION['parent_id'];
+													if (isset($_GET['from_period']) AND isset($_GET['to_period'])) {
+														$query = $connect->prepare("SELECT * FROM loan_payments WHERE paid_date BETWEEN ? AND ?  AND parent_id = ? ");
+														$query->execute(array($_GET['from_period'], $_GET['to_period'], $parent_id));
+														$query2 = $connect->prepare("SELECT SUM(amount) AS total_amount FROM loan_payments WHERE paid_date BETWEEN ? AND ?  AND parent_id = ? ");
+														$query2->execute(array($_GET['from_period'], $_GET['to_period'], $parent_id));
+														$rows = $query2->fetch();
+														$total_amount = $rows['total_amount'];
+
+													}else{
+														$query = $connect->prepare("SELECT * FROM loan_payments WHERE parent_id = ? ");
+														$query->execute([$parent_id]);
+
+														$query2 = $connect->prepare("SELECT *, SUM(amount) AS total_amount FROM loan_payments WHERE parent_id = ? ");
+														$query2->execute([$parent_id]);
+														$rows = $query2->fetch();
+														$total_amount = $rows['total_amount'];
+													}
+													
+													$numRows = $query->rowCount();
+													$i = 1;
+													if ($numRows > 0 ) {
+														
+														$i = 1;
+														foreach ($query->fetchAll() as $row) {
+															extract($row);
+															$month = date('F', strtotime($paid_date))
+														?>
+															<tr>
+																<td><a href="borrowers/loan-request?client-id=<?php echo base64_encode($borrower_id)?>&application_id=<?php echo base64_encode($loan_number)?>"><i class="bi bi-person-badge"></i> <?php echo getBorrowerFullNamesByCardId($connect, $borrower_id) ?></a></td>
+																<td><?php echo $currency ?> <?php echo $amount?></td>
+																<td><?php echo $currency ?> <?php echo $balance ?></td>
+																<td><?php echo date("l, jS \of F Y ", strtotime($paid_date))?></td>
+																<td><a href="loans/see-loan-details?loan-id=<?php echo base64_encode($loan_number)?>&borrower_id=<?php echo base64_encode($borrower_id) ?>"><i class="bi bi-wallet2"></i> View Loan details</a></td>
+															</tr>
+													<?php
+														}
+													}
+												?>
+											</tbody>
+											<tfoot>
+												<tr>
+													<th>Total</th>
+													<td><?php echo $currency?> <?php echo $total_amount?></td>
+													<td></td>
+													<td>
+														<?php if(isset($_GET['from_period']) AND isset($_GET['to_period'])):?>
+															<?php echo date("j F, Y", strtotime($from_period)) .' - '. date("j F, Y", strtotime($to_period))?>
+														<?php else: ?>
+															All Period
+														<?php endif;?>	
+													</td>
+													<td></td>
+												</tr>
+											</tfoot>
+										</table>
+										<?php 
+											$query = $connect->prepare("SELECT DATE(paid_date) AS date_collected, SUM(amount) AS total_collected FROM loan_payments WHERE parent_id = ? GROUP BY DATE(paid_date) ");
+											$query->execute([$parent_id]);
+											// Fetch the data and format it for use in ApexCharts
+											$data = [];
+											while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
+												$data[] = [
+													'x' => $row['date_collected'],
+													'y' => $row['total_collected']
+												];
+											}
+											$data_json = json_encode($data);
+										?>
+									</div>
+								</div>
+							<?php }?>
 						</div>
 					</div>
       			</div>
@@ -226,7 +366,6 @@
 	<?php include("../addon_footer.php")?>
 	<script>
 		$(document).ready( function () {
-		    $('#collectedLoans').DataTable();
 			$(".callForm").click(function(){
 				$("#collectionModal").modal("show");
 			})
@@ -263,11 +402,6 @@
 			}else{
 				
 			}
-
-			
-			// 565489/45/1
-			// 342327/87/1
-			// 009988/09/1
 		}
 
 		function calcBalance(amount){
@@ -275,16 +409,9 @@
 			var branchId = document.getElementById('branchId').value;
 			var loan_id = document.getElementById('loan_id').value;
 			var borrower_id = document.getElementById('borrowerId').value;
-			$.ajax({
-				type: "POST",
-				url: "loans/parsers/actionsLoans",
-				data: {check_amount_paid:check_amount_paid, borrower_id:borrower_id, branchId:branchId, loan_id:loan_id},
-				success: function(data) {
-					
-					var balance =  data -  amount;
-					$("#loan_balance_amount").val(balance);
-				}
-			});
+			var balance =  document.getElementById('loan_amount').value -  amount;
+			$("#loan_balance_amount").val(balance);
+			
 		}
 		// submit form
 		$(document).ready(function() {
@@ -302,10 +429,44 @@
 						successToast(data);
 						$("#btnSubmit").html('Submit Payment');
 						$("#collectedFundsForm")[0].reset();
+						setTimeout(function(){
+							location.reload();
+						}, 2500);
 					}
 				});
 			});
 		});
+
+		var options = {
+            chart: {
+                type: 'line'
+            },
+            series: [{
+                name: 'Collections',
+                data: <?php echo $data_json; ?>
+            }],
+            xaxis: {
+                type: 'datetime',
+                categories: <?php echo $data_json; ?>
+            },
+			yaxis: {
+                labels: {
+                    formatter: function (value) {
+                        return "<?php echo 'ZMW '; ?>" + value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                    }
+                }
+            },
+            tooltip: {
+                y: {
+                    formatter: function (value) {
+                        return "<?php echo 'ZMW '; ?>" + value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                    }
+                }
+            }
+        };
+
+        var chart = new ApexCharts(document.querySelector("#chart"), options);
+        chart.render();
 
 	</script>
 </body>
