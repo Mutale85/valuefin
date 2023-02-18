@@ -1,0 +1,4 @@
+Net Profit, 
+--- Get total of what was issues out in each month - approvedLoans
+--- Get what was collected in each month -- loan payments
+--- Subtract the issued out for the month from the collected payments, then find the net profit.
